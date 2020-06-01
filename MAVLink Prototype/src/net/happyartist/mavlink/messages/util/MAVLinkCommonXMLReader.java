@@ -32,8 +32,8 @@ import javax.xml.stream.events.Characters;
  */
 public class MAVLinkCommonXMLReader {
     public static void main(String[] args) {
-       // String url = "https://raw.githubusercontent.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
-        String url = "file:/C:/downloads/test.xml";
+        String url = "https://raw.githubusercontent.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
+        //String url = "file:/C:/downloads/test.xml";
         String commonSRC=null;
         try {
             commonSRC = parseXML(url);
