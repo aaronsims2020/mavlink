@@ -57,4 +57,6 @@ public class ParamElement {
 
     /** Not in spec... Added for convenience of reusing this class to hold data as well, rather than creating another class. */
     public String VALUE;
+    /** Not in spec, but simply character text on param elements. */
+    public String DESCRIPTION;
 }

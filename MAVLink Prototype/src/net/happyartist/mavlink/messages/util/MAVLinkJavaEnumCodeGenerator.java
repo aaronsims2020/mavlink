@@ -1,5 +1,7 @@
 package net.happyartist.mavlink.messages.util;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +13,9 @@ import java.util.List;
  * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, May 2020
  */
 public class MAVLinkJavaEnumCodeGenerator {
+    private static LocalDate currentDate = LocalDate.now();
+    private static String currentMonth = currentDate.getMonth().toString();
+    private static String currentYear = String.valueOf(currentDate.getYear());  
 // TODO: Completed in XML Reader - Field/Message, extension elements..., Attributes hasLocation, isDestination, bitmask, and the tag param, include (only top level includes allowed),.
 // TODO: include When building, generator toolchains will merge/append enums in all files, and report duplicate enum entries and messages.
     /** Generate Java SRC for message element Object. Mavlink Message Message element code automated code generation. */
@@ -20,17 +25,212 @@ public class MAVLinkJavaEnumCodeGenerator {
         return "// TODO: Generate message code.";
     }
 
-// TODO: 
     /** Generate Java SRC for MAV_CMD enum element Object. */
-    public static String generateMAVCMDObjects(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ParamElement> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
+    public static String generateMAVCMDObjects(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
     {
-        // TODO: Generate MAV_CMD code.
-// hasLocation and isDestination are MAV_CMD specific
-        return "// TODO: Generate MAV_CMD code.";
+    	StringBuilder output = new StringBuilder();
+    	// hasLocation and isDestination are MAV_CMD specific
+
+    	for(int i =0;i<valueNames.size();i++)
+    	{
+	        StringBuilder enumCode = new StringBuilder();
+	    	// package line
+	        enumCode.append("package net.happyartist.mavlink.messages.mavcmd;\n\n");
+	        // imports
+	        enumCode.append("import net.happyartist.mavlink.messages.util.ParamElement;\n\n");
+	    	// class javadoc
+	        enumCode.append("/** ");
+	        enumCode.append(descriptions.get(i));
+	        enumCode.append("\n* \n* @author Happy Artist\n* Copyright (C) ");
+	        enumCode.append(currentYear);
+	        enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+	        enumCode.append("* Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+	        enumCode.append(currentMonth);
+	        enumCode.append(" ");
+	        enumCode.append(currentYear);
+	        enumCode.append("\n*/\n");
+	        // define class
+	        enumCode.append("public class ");
+	        enumCode.append(valueNames.get(i));
+	        enumCode.append(" {\n");
+	        // define class variables
+	        // MAV_CMD name
+	        enumCode.append("/** The name of the MAV_CMD entry value (mandatory). This is a string of capitalized, underscore-separated words. */\n");
+	        enumCode.append("public final String name = \"");
+	        enumCode.append(valueNames.get(i));
+	        enumCode.append("\";\n");
+	        // MAV_CMD description
+	        enumCode.append("/**  (optional): A description of the MAV_CMD. */\n");
+	        enumCode.append("public String description = \"");
+	        enumCode.append(descriptions.get(i));
+	        enumCode.append("\";\n");     
+	        // MAV_CMD value
+	        enumCode.append("/** (optional): The value for the entry (a number). */\n");
+	        enumCode.append("public String value = \"");
+	        enumCode.append(values.get(i));
+	        enumCode.append("\";\n");            
+	        // MAV_CMD hasLocation
+	        enumCode.append("/** (optional): A boolean (default true) that provides a hint to a GCS that the entry should be displayed as a \"standalone\" location - rather than as a destination on the flight path. This is applied for entries that contain lat/lon/alt location information in their param 5, 6, and 7 values but which are not on the vehicle path (e.g.: MAV_CMD_DO_SET_ROI_LOCATION). */\n");
+	        if(enumEntryHasLocation.get(i)!=null)
+	        {
+		        enumCode.append("public boolean hasLocation = ");
+		        enumCode.append(enumEntryHasLocation.get(i));
+		        enumCode.append(";\n");  	        	
+	        }
+	        else
+	        {
+		        enumCode.append("public boolean hasLocation = false;\n");
+	        }
+	        // MAV_CMD isDestination
+	        enumCode.append("/** (optional): A boolean (default true) that provides a hint to a GCS that the entry is a location that should be displayed as a point on the flight path. This is applied for entries that contain lat/lon/alt location information in their param 5, 6, and 7 values and which are on the vehicle path (e.g.: MAV_CMD_NAV_WAYPOINT and MAV_CMD_NAV_LAND). */\n");
+	        if(enumEntryIsDestination.get(i)!=null)
+	        {
+		        enumCode.append("public boolean isDestination = ");
+		        enumCode.append(enumEntryIsDestination.get(i));
+		        enumCode.append(";\n");  	        	
+	        }
+	        else
+	        {
+		        enumCode.append("public boolean isDestination = false;\n");
+	        }	  
+	        ArrayList<ParamElement> params = enumParamElements.get(i);
+	        // Process the entry param elements.
+	        if(params!=null)
+	        {
+		        for(int j=0;j<params.size();j++)
+		        {
+		        	ParamElement element = params.get(j);
+		        	if(element!=null)
+		        	{	  
+		        		if(element.INDEX.equals("5"))
+		        		{
+			        		enumCode.append("/** (optional): ParamX description */\n");
+			        		enumCode.append("public ParamElement param");		        			
+			        		enumCode.append("X");	
+		        		}
+		        		else if(element.INDEX.equals("6"))
+		        		{
+			        		enumCode.append("/** (optional): ParamY description */\n");
+			        		enumCode.append("public ParamElement param");			        
+		        			enumCode.append("Y");			        			
+		        		}
+		        		else if(element.INDEX.equals("7"))
+		        		{
+			        		enumCode.append("/** (optional): ParamZ description */\n");
+			        		enumCode.append("public ParamElement param");		        			
+			        		enumCode.append("Z");			        			
+		        		}		        		
+		        		else
+		        		{
+			        		enumCode.append("/** (optional): Param");
+			        		enumCode.append(element.INDEX);
+			        		enumCode.append(" description */\n");
+			        		enumCode.append("public ParamElement param");		        			
+			        		enumCode.append(element.INDEX);			        			
+		        		}
+		        		enumCode.append(" = new ParamElement()\n{\n{\n");
+
+		        		enumCode.append("this.INDEX = \"");
+		        		enumCode.append(element.INDEX);
+		        		enumCode.append("\";\n");
+		        		// Param Label
+		        		if(element.LABEL_ISSET)
+		        		{
+		        			enumCode.append("this.LABEL_ISSET = true;\n");	
+		        			enumCode.append("this.LABEL = \"");
+		        			enumCode.append(element.LABEL);
+		        			enumCode.append("\";\n");
+		        		}
+		        		// Param Units 
+		        		if(element.UNITS_ISSET)
+		        		{
+		        			enumCode.append("this.UNITS_ISSET = true;\n");	
+		        			enumCode.append("this.UNITS = \"");
+		        			enumCode.append(element.UNITS);
+		        			enumCode.append("\";\n");
+		        		}
+		        		// Param Enum 
+		        		if(element.ENUM_ISSET)
+		        		{
+		        			enumCode.append("this.ENUM_ISSET = true;\n");	
+		        			enumCode.append("this.ENUM = \"");
+		        			enumCode.append(element.ENUM);
+		        			enumCode.append("\";\n");
+		        		}
+		        		// Param DECIMALPLACES
+		        		if(element.DECIMALPLACES_ISSET)
+		        		{
+		        			enumCode.append("this.DECIMALPLACES_ISSET = true;\n");	
+		        			enumCode.append("this.DECIMALPLACES = \"");
+		        			enumCode.append(element.DECIMALPLACES);
+		        			enumCode.append("\";\n");
+		        		}
+		        		// Param Increment
+		        		if(element.INCREMENT_ISSET)
+		        		{
+		        			enumCode.append("this.INCREMENT_ISSET = true;\n");	
+		        			enumCode.append("this.INCREMENT = \"");
+		        			enumCode.append(element.INCREMENT);
+		        			enumCode.append("\";\n");
+		        		}
+		        		// Param MINVALUE
+		        		if(element.MINVALUE_ISSET)
+		        		{
+		        			enumCode.append("this.MINVALUE_ISSET = true;\n");	
+		        			enumCode.append("this.MINVALUE = \"");
+		        			enumCode.append(element.MINVALUE);
+		        			enumCode.append("\";\n");
+		        		}		        		
+		        		// Param MAXVALUE
+		        		if(element.MAXVALUE_ISSET)
+		        		{
+		        			enumCode.append("this.MAXVALUE_ISSET = true;\n");	
+		        			enumCode.append("this.MAXVALUE = \"");
+		        			enumCode.append(element.MAXVALUE);
+		        			enumCode.append("\";\n");
+		        		}
+		        		// Param RESERVED
+		        		if(element.RESERVED_ISSET)
+		        		{
+		        			enumCode.append("this.RESERVED_ISSET = true;\n");	
+		        			enumCode.append("this.RESERVED = \"");
+		        			enumCode.append(element.RESERVED);
+		        			enumCode.append("\";\n");
+		        		}
+		        		// Param DEFAULT
+		        		if(element.DEFAULT_ISSET)
+		        		{
+		        			enumCode.append("this.DEFAULT_ISSET = true;\n");	
+		        			enumCode.append("this.DEFAULT = \"");
+		        			enumCode.append(element.DEFAULT);
+		        			enumCode.append("\";\n");
+		        		}
+		        		if(element.DESCRIPTION!=null)
+		        		{
+		        			enumCode.append("this.DESCRIPTION = \"");
+		        			enumCode.append(element.DESCRIPTION);
+		        			enumCode.append("\";\n");		        			
+		        		}
+		        		else
+		        		{
+		        			enumCode.append("this.DESCRIPTION = \"\";\n");		        			
+		        		}
+		        		enumCode.append("}\n};\n");
+	        		    // End param
+		        	}
+		        }
+	        }
+	        
+	        // end class
+	        enumCode.append("}\n\n");
+	        // append new MAV_CMD to output
+	        output.append(enumCode.toString());
+    	}
+        return output.toString();
     }
 
     /** Generate Java SRC for enum class. Mavlink Message Enum code automated code generation. */
-    public static String generateEnumObject(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ParamElement> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
+    public static String generateEnumObject(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
     {
         StringBuilder enumCode = new StringBuilder();
         // enum javadoc

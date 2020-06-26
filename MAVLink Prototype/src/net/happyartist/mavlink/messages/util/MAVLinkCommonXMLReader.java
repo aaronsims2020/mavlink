@@ -22,7 +22,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.Characters;
 
-/** Read and process the MAVLink common.xml, or new MAVLink xml dialects into Java SRC code.
+/** Read and process the MAVLink common.xml into Java SRC code.
  *
  * @author Happy Artist
  * Copyright (C) 2020 Happy Artist - All Rights Reserved
@@ -82,11 +82,12 @@ public class MAVLinkCommonXMLReader {
         List<String> enumNameNameValueDeprecatedReplacedBy = new ArrayList<String>();
         List<String> enumDescriptions = new ArrayList<String>();
         List<String> enumNameNameValueWIP = new ArrayList<String>();
-        List<ParamElement> enumParamElements = new ArrayList<ParamElement>();
+        List<ArrayList<ParamElement>> enumParamElementsArrayList = new ArrayList<ArrayList<ParamElement>>();
         List<String> enumEntryIsDestination = new ArrayList<String>();
         List<String> enumEntryHasLocation = new ArrayList<String>();
         MessageElement message = null;
 
+        int currentMAVCMDEntryIndex = -1;
         boolean isInsideEntry = false;
         boolean isInsideMessage = false;
         // MAV_CMD is not an enum but a collection of MAV Commands to be processed differently in codegen.
@@ -287,6 +288,10 @@ public class MAVLinkCommonXMLReader {
                     }
                     else if(startElement.getName().getLocalPart().equals("entry")){
                         isInsideEntry = true;
+                        // Generate a new ArrayList<ParamElement> to a length of 7, and add to enumParamElementsArrayList
+                        ArrayList<ParamElement> paramElements = new ArrayList<ParamElement>(7);
+                        currentMAVCMDEntryIndex = currentMAVCMDEntryIndex + 1;
+                        enumParamElementsArrayList.add(paramElements);
                        //Get the 'value' attribute from entry element
                        Attribute valueAttr = startElement.getAttributeByName(new QName("value"));
                        if(valueAttr != null){
@@ -409,7 +414,8 @@ public class MAVLinkCommonXMLReader {
                            param.DEFAULT_ISSET=true;
                            param.DEFAULT=defaultAttr.getValue();
                        }
-                       enumParamElements.add(param);
+                       param.DESCRIPTION = getCharacterData(xmlEvent, xmlEventReader);
+                       enumParamElementsArrayList.get(currentMAVCMDEntryIndex).add(param);
                    }
 
                }
@@ -426,14 +432,15 @@ public class MAVLinkCommonXMLReader {
                         {      
                             // process to return src for MAV_CMD command objects
                             isInsideMAV_CMD = false;
-                            sb.append(MAVLinkJavaEnumCodeGenerator.generateMAVCMDObjects(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElements, enumEntryIsDestination, enumEntryHasLocation));
+                            sb.append(MAVLinkJavaEnumCodeGenerator.generateMAVCMDObjects(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElementsArrayList, enumEntryIsDestination, enumEntryHasLocation));
                         }  
                         else
                         {
                             // process to return src for enum object
-                            sb.append(MAVLinkJavaEnumCodeGenerator.generateEnumObject(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElements, enumEntryIsDestination, enumEntryHasLocation));
+                            sb.append(MAVLinkJavaEnumCodeGenerator.generateEnumObject(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElementsArrayList, enumEntryIsDestination, enumEntryHasLocation));
                         }
                         // reset enum level variables
+                        currentMAVCMDEntryIndex = -1;
                         enumName = "";
                         enumBitmask="";
                         enumNameDescription = "";
@@ -448,7 +455,7 @@ public class MAVLinkCommonXMLReader {
                         enumValues.clear();
                         enumDescriptions.clear();
                         enumNameNameValueWIP.clear();
-                        enumParamElements.clear();
+                        enumParamElementsArrayList.clear();
                         enumEntryIsDestination.clear();
                         enumEntryHasLocation.clear();
                    }
@@ -480,9 +487,9 @@ public class MAVLinkCommonXMLReader {
                             enumNameNameValueWIP.add(null);
                         }
                         // Handle enum param elements List size by adding a null if no param was defined in xml.
-                        if(enumParamElements.size()!=enumValues.size())
+                        if(enumParamElementsArrayList.size()!=enumValues.size())
                         {
-                            enumParamElements.add(null);
+                            enumParamElementsArrayList.add(null);
                         }
                         // Handle enum element entry attribute isDestination List size by adding a null if no param was defined in xml.
                         if(enumEntryIsDestination.size()!=enumValues.size())

@@ -18,7 +18,7 @@ public class MAVLinkParamTypeConverter {
         }
         else if(paramType.equals("char"))
         {
-
+        	return "char";
         }
         else if(paramType.equals("int8_t"))
         {
@@ -68,12 +68,12 @@ public class MAVLinkParamTypeConverter {
         }
         else if(paramType.indexOf("array")!=-1)
         {
-            // TODO: decide how to handle arrays...
+        	return "ARRAY_NOT_IMPLEMENTED";
         }
         else
         {
             // Undefined type
-
+        	return "UNDEFINED_TYPE";
         }
     }
 }
