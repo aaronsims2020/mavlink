@@ -1,4 +1,4 @@
-package net.happyartist.mavlink.messages.generator;
+package org.happy.artist.mavlink.messages.generator;
 
 import java.util.List;
 import java.util.ArrayList;

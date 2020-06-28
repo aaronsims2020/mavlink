@@ -1,4 +1,4 @@
-package net.happyartist.mavlink.messages.generator;
+package org.happy.artist.mavlink.messages.generator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,11 +22,11 @@ public class MAVLinkJavaEnumCodeGenerator {
     {
     	StringBuilder enumCode = new StringBuilder();
     	// package line
-        enumCode.append("package net.happyartist.mavlink.messages.mavmessages;\n\n");
+        enumCode.append("package org.happy.artist.mavlink.messages.mavmessages;\n\n");
         // imports
         enumCode.append("import java.util.List;\n");
         enumCode.append("import java.util.ArrayList;\n");
-        enumCode.append("import net.happyartist.mavlink.messages.generator.FieldElement;\n\n");        
+        enumCode.append("import org.happy.artist.mavlink.messages.generator.FieldElement;\n\n");        
 
         // message javadoc
         if(message.DEPRECATED_ELEM==null&&message.WIP_ELEM==null)
@@ -305,9 +305,9 @@ public class MAVLinkJavaEnumCodeGenerator {
     	{
 	        StringBuilder enumCode = new StringBuilder();
 	    	// package line
-	        enumCode.append("package net.happyartist.mavlink.messages.mavcmd;\n\n");
+	        enumCode.append("package org.happy.artist.mavlink.messages.mavcmd;\n\n");
 	        // imports
-	        enumCode.append("import net.happyartist.mavlink.messages.generator.ParamElement;\n\n");
+	        enumCode.append("import org.happy.artist.mavlink.messages.generator.ParamElement;\n\n");
         
 	        // class javadoc	        
 	        String mavCMDDeprecated = enumNameNameValueDeprecated.get(i);
@@ -602,7 +602,7 @@ public class MAVLinkJavaEnumCodeGenerator {
     {
         StringBuilder enumCode = new StringBuilder();
     	// package line
-        enumCode.append("package net.happyartist.mavlink.messages.mavenums;\n\n");        
+        enumCode.append("package org.happy.artist.mavlink.messages.mavenums;\n\n");        
         // enum javadoc
         if(enumDeprecated==null&&enumWIP==null)
         {

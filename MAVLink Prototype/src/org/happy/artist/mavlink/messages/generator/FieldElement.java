@@ -1,4 +1,4 @@
-package net.happyartist.mavlink.messages.generator;
+package org.happy.artist.mavlink.messages.generator;
 
     /** Field class for holding a MAVLink field link. Encodes one field of the message. 
      *  The field value is its name/text string used in GUI documentation (but not sent over the wire). 
