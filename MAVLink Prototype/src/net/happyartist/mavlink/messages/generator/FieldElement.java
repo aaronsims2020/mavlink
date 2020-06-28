@@ -1,10 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package net.happyartist.mavlink.messages.util;
+package net.happyartist.mavlink.messages.generator;
 
     /** Field class for holding a MAVLink field link. Encodes one field of the message. 
      *  The field value is its name/text string used in GUI documentation (but not sent over the wire). 
@@ -13,7 +7,7 @@ package net.happyartist.mavlink.messages.util;
     * Copyright (C) 2020 Happy Artist - All Rights Reserved
     * Unauthorized copying of this file, via any medium is strictly prohibited
     * Proprietary and confidential
-    * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, May 2020
+    * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, May-June 2020
     */
     public class FieldElement
     {

@@ -1,4 +1,4 @@
-package net.happyartist.mavlink.messages.util;
+package net.happyartist.mavlink.messages.generator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
  * Copyright (C) 2020 Happy Artist - All Rights Reserved
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
- * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, May 2020
+ * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, May-June 2020
  */
 public class MAVLinkJavaEnumCodeGenerator {
     private static LocalDate currentDate = LocalDate.now();
@@ -21,8 +21,279 @@ public class MAVLinkJavaEnumCodeGenerator {
     /** Generate Java SRC for message element Object. Mavlink Message Message element code automated code generation. */
     public static String generateMessageObject(MessageElement message)
     {
-        // TODO: Generate message code.
-        return "// TODO: Generate message code.";
+    	StringBuilder enumCode = new StringBuilder();
+    	// package line
+        enumCode.append("package net.happyartist.mavlink.messages.mavmessages;\n\n");
+        // imports
+        enumCode.append("import java.util.List;\n");
+        enumCode.append("import java.util.ArrayList;\n");
+        enumCode.append("import net.happyartist.mavlink.messages.generator.FieldElement;\n\n");        
+
+        // message javadoc
+        if(message.DEPRECATED_ELEM==null&&message.WIP_ELEM==null)
+        {
+            if(message.DEPRECATED_ELEM==null||message.DESCRIPTION_ELEM.isEmpty())
+            {
+                // No description defined.
+                enumCode.append("/** */\n");
+            }
+            else
+            {
+                // description available write Javadocs
+                enumCode.append("/** ");
+                enumCode.append(message.DESCRIPTION_ELEM);
+                enumCode.append(" */\n");
+            }
+            enumCode.append("public class ");
+        }
+        else if(message.WIP_ELEM!=null)
+        {
+            // message is WIP
+            if(message.DESCRIPTION_ELEM==null||message.DESCRIPTION_ELEM.isEmpty())
+            {
+                // No description defined.
+                enumCode.append("/** WIP: This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. ");
+                enumCode.append(message.WIP_ELEM);
+                enumCode.append("\n*\n* Notes: Empty Strings are defined elements without any attributes or characters data. Null Strings are \n*  defined schema tags not in the xml definition, and non empty Strings are the value or element character data.\n*\n");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");                
+            }
+            else
+            {
+                // description available write Javadocs
+                enumCode.append("/** WIP: This message is work-in-progress and it can therefore change. It should NOT be used in stable production environments. ");
+                enumCode.append(message.WIP_ELEM);
+                enumCode.append("\n * ");
+                enumCode.append(message.DESCRIPTION_ELEM);
+                enumCode.append("\n*\n* Notes: Empty Strings are defined elements without any attributes or characters data. Null Strings are \n*  defined schema tags not in the xml definition, and non empty Strings are the value or element character data.\n*\n");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");
+            }
+            enumCode.append("public class ");
+        }
+        else
+        {
+            // message is deprecated
+            if(message.SINCE_ATTR==null)
+            {
+            	message.SINCE_ATTR="NOT_DEFINED";
+            }
+            if(message.REPLACED_BY_ATTR==null)
+            {
+            	message.REPLACED_BY_ATTR="NOT_DEFINED";
+            }
+            if(message.DESCRIPTION_ELEM==null||message.DESCRIPTION_ELEM.isEmpty())
+            {
+                // No description defined.
+                enumCode.append("/** @deprecated  As of ");
+                enumCode.append(message.SINCE_ATTR);
+                enumCode.append(", replaced by ");
+                enumCode.append(message.REPLACED_BY_ATTR);
+                enumCode.append(".");
+                enumCode.append("\n*\n* Notes: Empty Strings are defined elements without any attributes or characters data. Null Strings are \n*  defined schema tags not in the xml definition, and non empty Strings are the value or element character data.\n*\n");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");                
+            }
+            else
+            {
+                // description available write Javadocs
+                enumCode.append("/** @deprecated  As of ");
+                enumCode.append(message.SINCE_ATTR);
+                enumCode.append(", replaced by ");
+                enumCode.append(message.REPLACED_BY_ATTR);
+                enumCode.append(".\n * ");
+                enumCode.append(message.DESCRIPTION_ELEM);
+                enumCode.append("\n*\n* Notes: Empty Strings are defined elements without any attributes or characters data. Null Strings are \n*  defined schema tags not in the xml definition, and non empty Strings are the value or element character data.\n*\n");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");
+            }
+            enumCode.append("@Deprecated public class ");
+        }
+        enumCode.append(message.NAME_ATTR);
+        enumCode.append("\n{\n");        
+        // define class variables
+        // id attribute
+        enumCode.append("/** The id attribute is the unique index number of this message (in the example above: 147).\r\n  * For MAVLink 1:\r\n  *     Valid numbers range from 0 to 255.\r\n  *     The ids 0-149 and 230-255 are reserved for common.xml. Dialects can use 180-229 \r\n  *     for custom messages (provided these are not used by other included dialects).\r\n  * For MAVLink 2:\r\n  *     Valid numbers range from 0 to 16777215.\r\n  *     All numbers below 255 should be considered reserved unless messages are also intended for MAVLink 1 \r\n*/\n");
+        enumCode.append("public String id = \"");
+        enumCode.append(message.ID_ATTR);
+        enumCode.append("\";\n");
+        // name attribute
+        enumCode.append("/** The name attribute provides a human readable form for the message (ie \"BATTERY_STATUS\"). \r\n  * It is used for naming helper functions in generated libraries, but is not sent over the wire. \r\n  */\n");
+        enumCode.append("public String name = \"");
+        enumCode.append(message.NAME_ATTR);
+        enumCode.append("\";\n");        
+        // description element
+        enumCode.append("/** Human readable description of message, shown in user interfaces and in code comments. \r\n  * This should contain all information (and hyperlinks) to fully understand the message. */\n");
+        if(message.DESCRIPTION_ELEM.isEmpty())
+        {
+        	enumCode.append("public String description = \"\";\n");
+        }
+        else
+        {
+            enumCode.append("public String description = \"");
+            enumCode.append(message.DESCRIPTION_ELEM);
+            enumCode.append("\";\n");             	
+        }
+ 
+        // extensions_start_index attribute
+        enumCode.append("/** The Extensions start index element position in FIELD_ELEMS List. \r\n  * -1 if no EXTENSIONS Element defined in the MAVLink Schema Message Definition. \r\n */\n");
+        enumCode.append("public int extensions_start_index = ");
+        enumCode.append(String.valueOf(message.EXTENSIONS_START_INDEX));
+        enumCode.append(";\n");           
+
+        // field elements
+        enumCode.append("/** List of message Field elements in iterative order. */\n");
+        enumCode.append("public List<FieldElement> fields = new ArrayList<FieldElement>();\n");
+        enumCode.append("{\n");
+        String fieldName;
+    	for(int i=0;i<message.FIELD_ELEMS.size();i++)
+    	{
+    		FieldElement field = message.FIELD_ELEMS.get(i);
+    		fieldName = "field".concat(String.valueOf(i));
+    		enumCode.append("FieldElement ");
+    		enumCode.append(fieldName);
+    		enumCode.append(" = new FieldElement();\n");
+    		// TYPE_ATTR
+    		if(field.TYPE_ATTR!=null)
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".TYPE_ATTR = \"");
+	    		enumCode.append(field.TYPE_ATTR);
+	    		enumCode.append("\";\n");
+    		}
+    		else
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".TYPE_ATTR = null;\n");    			
+    		}
+    		// NAME_ATTR
+    		if(field.NAME_ATTR!=null)
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".NAME_ATTR = \"");
+	    		enumCode.append(field.NAME_ATTR);
+	    		enumCode.append("\";\n");
+			}
+			else
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".NAME_ATTR = null;\n");    			
+			}    		
+    		// ENUM_ATTR
+    		if(field.ENUM_ATTR!=null)    		
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".ENUM_ATTR = \"");
+	    		enumCode.append(field.ENUM_ATTR);
+	    		enumCode.append("\";\n");
+			}
+			else
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".ENUM_ATTR = null;\n");    			
+			} 
+    		// UNITS_ATTR
+    		if(field.UNITS_ATTR!=null)
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".UNITS_ATTR = \"");
+	    		enumCode.append(field.UNITS_ATTR);
+	    		enumCode.append("\";\n");
+			}
+			else
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".UNITS_ATTR = null;\n");    			
+			} 
+    		// DISPLAY_ATTR
+    		if(field.DISPLAY_ATTR!=null)    		
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".DISPLAY_ATTR = \"");
+	    		enumCode.append(field.DISPLAY_ATTR);
+	    		enumCode.append("\";\n");    
+    		}   	
+			else
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".DISPLAY_ATTR = null;\n");    			
+			} 
+    		// PRINT_FORMAT_ATTR
+    		if(field.PRINT_FORMAT_ATTR!=null)    		
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".PRINT_FORMAT_ATTR = \"");
+	    		enumCode.append(field.PRINT_FORMAT_ATTR);
+	    		enumCode.append("\";\n");        		
+    		}
+			else
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".PRINT_FORMAT_ATTR = null;\n");    			
+			}     		
+    		// DEFAULT_ATTR
+    		if(field.DEFAULT_ATTR!=null)
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".DEFAULT_ATTR = \"");
+	    		enumCode.append(field.DEFAULT_ATTR);
+	    		enumCode.append("\";\n");
+    		}
+			else
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".DEFAULT_ATTR = null;\n");    			
+			}     		
+    		// DESCRIPTION_CHARDATA
+    		if(field.DESCRIPTION_CHARDATA!=null)
+    		{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".DESCRIPTION_CHARDATA = \"");
+	    		enumCode.append(field.DESCRIPTION_CHARDATA);
+	    		enumCode.append("\";\n");        		
+    		}
+			else
+			{
+	    		enumCode.append(fieldName);
+	    		enumCode.append(".DESCRIPTION_CHARDATA_ATTR = null;\n");    			
+			} 
+    		
+    		enumCode.append("fields.add(");
+    		enumCode.append(fieldName);
+    		enumCode.append(");\n");
+    	}
+    	// Not really sure how to identify the extensions yet...
+    	
+        enumCode.append("}\n");
+        
+    	// end class
+    	enumCode.append("}\n");
+    	
+        return enumCode.toString();
     }
 
     /** Generate Java SRC for MAV_CMD enum element Object. */
@@ -37,7 +308,7 @@ public class MAVLinkJavaEnumCodeGenerator {
 	    	// package line
 	        enumCode.append("package net.happyartist.mavlink.messages.mavcmd;\n\n");
 	        // imports
-	        enumCode.append("import net.happyartist.mavlink.messages.util.ParamElement;\n\n");
+	        enumCode.append("import net.happyartist.mavlink.messages.generator.ParamElement;\n\n");
 	    	// class javadoc
 	        enumCode.append("/** ");
 	        enumCode.append(descriptions.get(i));

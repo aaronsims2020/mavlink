@@ -1,11 +1,9 @@
-package net.happyartist.mavlink.messages.util;
+package net.happyartist.mavlink.messages.generator;
 
 import java.util.List;
 import java.util.ArrayList;
 
 /** Stores MAVLink Message element Schema Definition values for the code generator class.
- *  boolean variable names ending _ISSET define true if the param attribute value was set in the 
- *  xml definition. skip if set to false during code generation.
  * 
  *  Notes: Empty Strings are defined elements without any attributes or characters data. Null Strings are 
  *  defined schema tags not in the xml definition, and non empty Strings are the value or element character data.

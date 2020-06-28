@@ -1,4 +1,4 @@
-package net.happyartist.mavlink.messages.util;
+package net.happyartist.mavlink.messages.generator;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
