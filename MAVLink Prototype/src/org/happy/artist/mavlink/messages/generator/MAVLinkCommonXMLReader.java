@@ -1,12 +1,11 @@
 package org.happy.artist.mavlink.messages.generator;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,6 +19,8 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
+import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 import javax.xml.stream.events.Characters;
 
 /** Read and process the MAVLink common.xml into Java SRC code.
@@ -34,9 +35,14 @@ public class MAVLinkCommonXMLReader {
     public static void main(String[] args) {
         String url = "https://raw.githubusercontent.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
         //String url = "file:/C:/downloads/test.xml";
-        String commonSRC=null;
+        List<MessageCompiler.DynamicSourceCodeObject> srcObjects = null;
         try {
-            commonSRC = parseXML(url);
+            System.out.println("Generating MAVLink Common Messages src code...");
+            srcObjects = parseXML(url);
+            System.out.println("Compiling Java MAVLink Common Messages src code...");            
+            File absolutePath = new File("./bin");
+            System.out.println("Classes output directory: ".concat(absolutePath.getCanonicalPath()));
+            System.out.println("Success: ".concat(String.valueOf(MessageCompiler.compile(srcObjects, "./bin"))));
         }
         catch(URISyntaxException ex)
         {
@@ -44,23 +50,28 @@ public class MAVLinkCommonXMLReader {
         }
          catch (MalformedURLException ex) {
             Logger.getLogger(MAVLinkCommonXMLReader.class.getName()).log(Level.SEVERE, "Malformed URL", ex);
-        }
+        } catch (Exception ex) {
 
-        System.out.println(commonSRC);
+            Logger.getLogger(MAVLinkCommonXMLReader.class.getName()).log(Level.SEVERE, "Compiler Exception", ex);
+		}
+        // System.out.println(srcObjects);
     }
 
-    /** Return Java SRC from MAVLink xml. */
-    public static String parseXML(String commonXMLURL) throws MalformedURLException, URISyntaxException {
+    /** Return Java SRC from MAVLink xml. 
+     * @throws Exception */
+    public static List<MessageCompiler.DynamicSourceCodeObject> parseXML(String commonXMLURL) throws Exception {
         return parseXML(commonXMLURL, null, false);
     }
-    /** Return Java SRC from MAVLink xml. If is root document set boolean isInclude to false. */
-    private static String parseXML(String commonXMLURL, String relativeURI, boolean isInclude) throws MalformedURLException, URISyntaxException {
+    /** Return Java SRC from MAVLink xml. If is root document set boolean isInclude to false. 
+     * @throws Exception */
+    private static List<MessageCompiler.DynamicSourceCodeObject> parseXML(String commonXMLURL, String relativeURI, boolean isInclude) throws Exception {
         URL url = new URL(commonXMLURL);
         if(isInclude==true&&relativeURI!=null)
         {
             // Resolve URI to URL.
             url = url.toURI().resolve(relativeURI).toURL();
         }
+    	List<MessageCompiler.DynamicSourceCodeObject> srcObjects = new ArrayList<MessageCompiler.DynamicSourceCodeObject>();        
         StringBuilder sb = new StringBuilder();
         // Document level variables
         String mavlinkVersion = "";
@@ -88,10 +99,20 @@ public class MAVLinkCommonXMLReader {
         MessageElement message = null;
 
         int currentMAVCMDEntryIndex = -1;
-        boolean isInsideEntry = false;
+        boolean isInsideEntry = false;       
         boolean isInsideMessage = false;
         // MAV_CMD is not an enum but a collection of MAV Commands to be processed differently in codegen.
         boolean isInsideMAV_CMD = false;
+        // param index checking for duplicate params. Will be used to skip duplicate params, and document a warning to the UI of duplicate element.
+        boolean paramIndex1Exists = false;
+        boolean paramIndex2Exists = false;
+        boolean paramIndex3Exists = false;
+        boolean paramIndex4Exists = false;
+        boolean paramIndex5Exists = false;
+        boolean paramIndex6Exists = false;
+        boolean paramIndex7Exists = false;
+        boolean skipParamAddToList = false;
+        
         try {
             XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(url.openStream());
             while(xmlEventReader.hasNext()){
@@ -190,6 +211,10 @@ public class MAVLinkCommonXMLReader {
                             field.DEFAULT_ATTR=defaultAttr.getValue();
                        }
                        field.DESCRIPTION_CHARDATA = getCharacterData(xmlEvent, xmlEventReader);
+                       if(field.DESCRIPTION_CHARDATA!=null)
+                       {
+                    	   field.DESCRIPTION_CHARDATA = field.DESCRIPTION_CHARDATA.replace("\"", "\\\"").replace("\r", "").replace("\n", "");
+                       }
                         // add new field to message element
                         message.FIELD_ELEMS.add(field);
                     }
@@ -197,6 +222,10 @@ public class MAVLinkCommonXMLReader {
                         if(isInsideMessage)
                         {
                             message.WIP_ELEM = getCharacterData(xmlEvent, xmlEventReader);
+                            if(message.WIP_ELEM!=null)
+                            {
+                            	message.WIP_ELEM = message.WIP_ELEM.replace("\"", "\\\"").replace("\r", "").replace("\n", "");
+                            }
                         }
                         else if(isInsideEntry)
                          {
@@ -260,16 +289,29 @@ public class MAVLinkCommonXMLReader {
                         if(isInsideMessage)
                         {
                             message.DESCRIPTION_ELEM = getCharacterData(xmlEvent, xmlEventReader);
+                            if(message.DESCRIPTION_ELEM!=null)
+                            {
+                            	message.DESCRIPTION_ELEM = message.DESCRIPTION_ELEM.replace("\"", "\\\"").replace("\r", "").replace("\n", "");
+                            }
                         }
                         else if(isInsideEntry)
                         {
                             // enum value description
-                            enumDescriptions.add(getCharacterData(xmlEvent, xmlEventReader));
+                        	String messageDescriptionElement = getCharacterData(xmlEvent, xmlEventReader);
+                            if(messageDescriptionElement!=null)
+                            {
+                            	messageDescriptionElement = messageDescriptionElement.replace("\"", "\\\"").replace("\r", "").replace("\n", "");
+                            }  
+                        	enumDescriptions.add(messageDescriptionElement);                          
                         }
                         else
                         {
                             // enum description
                             enumNameDescription = getCharacterData(xmlEvent, xmlEventReader);
+                            if(enumNameDescription!=null)
+                            {
+                            	enumNameDescription = enumNameDescription.replace("\"", "\\\"").replace("\r", "").replace("\n", "");
+                            }                             
                         }
                    }
                     else if(startElement.getName().getLocalPart().equals("message")){
@@ -299,8 +341,8 @@ public class MAVLinkCommonXMLReader {
                        }
                        else
                        {
-                           // Add null if no value found to pad index.
-                           enumValues.add(null);
+                           // Add "-1" to represent NaN in Enums, since null cannot represent an int.
+                           enumValues.add("-1");
                        }
                        //Get the 'name' attribute from entry element
                        Attribute nameAttr = startElement.getAttributeByName(new QName("name"));
@@ -353,7 +395,64 @@ public class MAVLinkCommonXMLReader {
                        //Get the 'index' attribute from param element (required)
                        Attribute indexAttr = startElement.getAttributeByName(new QName("index"));
                        if(indexAttr != null){
+                    	   
                            param.INDEX=indexAttr.getValue();
+                           if(param.INDEX.equals("1")&&paramIndex1Exists==false)
+                           {
+                               paramIndex1Exists = true;                       	   
+                           }
+                           else if(param.INDEX.equals("1")&&paramIndex1Exists==true)
+                           {
+                        	   skipParamAddToList = true;
+                           }
+                           else if(param.INDEX.equals("2")&&paramIndex2Exists==false)
+                           {
+                               paramIndex2Exists = true;                    	   
+                           }
+                           else if(param.INDEX.equals("2")&&paramIndex2Exists==true)
+                           {
+                        	   skipParamAddToList = true;
+                           }                           
+                           else if(param.INDEX.equals("3")&&paramIndex3Exists==false)
+                           {
+                               paramIndex3Exists = true;                	   
+                           }
+                           else if(param.INDEX.equals("3")&&paramIndex3Exists==true)
+                           {
+                        	   skipParamAddToList = true;
+                           }                           
+                           else if(param.INDEX.equals("4")&&paramIndex4Exists==false)
+                           {
+                               paramIndex4Exists = true;                                 	   
+                           }
+                           else if(param.INDEX.equals("4")&&paramIndex4Exists==true)
+                           {
+                        	   skipParamAddToList = true;
+                           }                           
+                           else if(param.INDEX.equals("5")&&paramIndex5Exists==false)
+                           {
+                               paramIndex5Exists = true;                           	   
+                           }
+                           else if(param.INDEX.equals("5")&&paramIndex5Exists==true)
+                           {
+                        	   skipParamAddToList = true;
+                           }                           
+                           else if(param.INDEX.equals("6")&&paramIndex6Exists==false)
+                           {
+                               paramIndex6Exists = true;                     	   
+                           }
+                           else if(param.INDEX.equals("6")&&paramIndex6Exists==true)
+                           {
+                        	   skipParamAddToList = true;
+                           }                           
+                           else if(param.INDEX.equals("7")&&paramIndex7Exists==false)
+                           {
+                               paramIndex7Exists = true;                            	   
+                           }                           
+                           else if(param.INDEX.equals("7")&&paramIndex7Exists==true)
+                           {
+                        	   skipParamAddToList = true;
+                           }                           
                        }
                        else
                        {
@@ -415,7 +514,21 @@ public class MAVLinkCommonXMLReader {
                            param.DEFAULT=defaultAttr.getValue();
                        }
                        param.DESCRIPTION = getCharacterData(xmlEvent, xmlEventReader);
-                       enumParamElementsArrayList.get(currentMAVCMDEntryIndex).add(param);
+                       if(param.DESCRIPTION!=null)
+                       {
+                    	   param.DESCRIPTION = param.DESCRIPTION.replace("\"", "\\\"").replace("\r", "").replace("\n", "");
+                       }
+                       // Skip adding the param element if it contains a duplicate index.
+                       if(skipParamAddToList == false)
+                       {
+                           enumParamElementsArrayList.get(currentMAVCMDEntryIndex).add(param);                    	   
+                       }
+                       else
+                       {
+                    	   System.out.println("Warning: Duplicate param element in ".concat(enumNameValues.get(currentMAVCMDEntryIndex)).concat(". Ignoring duplicate, and skipping to next element."));
+                    	   // Reset skipParamAddToList = false
+                    	   skipParamAddToList = false;
+                       }
                    }
 
                }
@@ -424,7 +537,7 @@ public class MAVLinkCommonXMLReader {
                    EndElement endElement = xmlEvent.asEndElement();
                     if(endElement.getName().getLocalPart().equals("message")){
                         isInsideMessage = false;
-                        sb.append(MAVLinkJavaEnumCodeGenerator.generateMessageObject(message));
+                        srcObjects.addAll(MAVLinkJavaEnumCodeGenerator.generateMessageObject(message));
                         message = null;
                     }
                    else if(endElement.getName().getLocalPart().equals("enum")){
@@ -432,12 +545,12 @@ public class MAVLinkCommonXMLReader {
                         {      
                             // process to return src for MAV_CMD command objects
                             isInsideMAV_CMD = false;
-                            sb.append(MAVLinkJavaEnumCodeGenerator.generateMAVCMDObjects(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElementsArrayList, enumEntryIsDestination, enumEntryHasLocation));
+                            srcObjects.addAll(MAVLinkJavaEnumCodeGenerator.generateMAVCMDObjects(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElementsArrayList, enumEntryIsDestination, enumEntryHasLocation));
                         }  
                         else
                         {
                             // process to return src for enum object
-                            sb.append(MAVLinkJavaEnumCodeGenerator.generateEnumObject(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElementsArrayList, enumEntryIsDestination, enumEntryHasLocation));
+                        	srcObjects.addAll(MAVLinkJavaEnumCodeGenerator.generateEnumObject(enumName, enumBitmask, enumNameDescription, enumNameDeprecated, enumNameDeprecatedSince, enumNameDeprecatedReplacedBy, enumWIP, enumValues, enumNameValues, enumDescriptions, enumNameNameValueDeprecated, enumNameNameValueDeprecatedSince, enumNameNameValueDeprecatedReplacedBy, enumNameNameValueWIP, enumParamElementsArrayList, enumEntryIsDestination, enumEntryHasLocation));
                         }
                         // reset enum level variables
                         currentMAVCMDEntryIndex = -1;
@@ -501,6 +614,14 @@ public class MAVLinkCommonXMLReader {
                         {
                             enumEntryHasLocation.add(null);
                         }
+                        paramIndex1Exists = false;
+                        paramIndex2Exists = false;
+                        paramIndex3Exists = false;
+                        paramIndex4Exists = false;
+                        paramIndex5Exists = false;
+                        paramIndex6Exists = false;
+                        paramIndex7Exists = false;
+                        skipParamAddToList = false;
                     }
                }
             }
@@ -510,7 +631,7 @@ public class MAVLinkCommonXMLReader {
         } catch (IOException ex) {
             Logger.getLogger(MAVLinkCommonXMLReader.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return sb.toString();
+        return srcObjects;
     }
     private static String getCharacterData(XMLEvent event, XMLEventReader eventReader) throws XMLStreamException {
         String result = "";
@@ -520,4 +641,5 @@ public class MAVLinkCommonXMLReader {
         }
         return result;
     }
+    
 }

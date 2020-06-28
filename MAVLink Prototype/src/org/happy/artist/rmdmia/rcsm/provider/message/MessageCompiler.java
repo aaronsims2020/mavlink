@@ -193,9 +193,17 @@ public class MessageCompiler
  
         // for compilation diagnostic message processing on compilation WARNING/ERROR
         MessageDiagnosticListener c = new MessageDiagnosticListener();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(c,
-                                                                              Locale.ENGLISH,
-                                                                              null);
+        StandardJavaFileManager fileManager = null;
+        try
+        {
+        	fileManager = compiler.getStandardFileManager(c,Locale.ENGLISH,null);
+        }
+        catch(NullPointerException e)
+        {
+        	System.out.println("Java JDK Required to compile. Change \"java.home\" system property from ".concat(System.getProperty("java.home")).concat(" to a JDK."));
+        	e.printStackTrace();
+        	throw e;
+        }
         //specify classes output folder
         Iterable options = Arrays.asList("-d", class_output_folder, "-cp", System.getProperty("java.class.path").concat(System.getProperty("path.separator")).concat(class_output_folder));
 
@@ -211,7 +219,7 @@ public class MessageCompiler
         // Compile Java source code by String.
         String[] sourceCode = {"class HelloWorld{"
         + "public static void main (String args[]){"
-        + "System.out.println (\"Hello world!\")"
+        + "System.out.println (\"Hello world!\");"
         + "}"
         + "}"};
         String[] class_names={"org.test.HelloWorld"};

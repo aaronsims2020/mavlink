@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
+
 /**
  * Java Mavlink Message Enum code automated code generator helper class. The Message Codes are so extensive it was faster to automate than to manually code, and javadoc each variable.
  * @author Happy Artist
@@ -16,10 +18,12 @@ public class MAVLinkJavaEnumCodeGenerator {
     private static LocalDate currentDate = LocalDate.now();
     private static String currentMonth = currentDate.getMonth().toString();
     private static String currentYear = String.valueOf(currentDate.getYear());  
-// TODO: include When building, generator toolchains will merge/append enums in all files, and report duplicate enum entries and messages.
-    /** Generate Java SRC for message element Object. Mavlink Message Message element code automated code generation. */
-    public static String generateMessageObject(MessageElement message)
+    /** Generate Java SRC for message element Object. Mavlink Message Message element code automated code generation. 
+     * @throws Exception 
+     */
+    public static List<MessageCompiler.DynamicSourceCodeObject> generateMessageObject(MessageElement message) throws Exception
     {
+    	List<MessageCompiler.DynamicSourceCodeObject> srcObjects = new ArrayList<MessageCompiler.DynamicSourceCodeObject>();
     	StringBuilder enumCode = new StringBuilder();
     	// package line
         enumCode.append("package org.happy.artist.mavlink.messages.mavmessages;\n\n");
@@ -291,13 +295,17 @@ public class MAVLinkJavaEnumCodeGenerator {
         
     	// end class
     	enumCode.append("}\n");
-    	
-        return enumCode.toString();
+    	MessageCompiler.DynamicSourceCodeObject src = new MessageCompiler.DynamicSourceCodeObject("org.happy.artist.mavlink.messages.mavmessages.".concat(message.NAME_ATTR),enumCode.toString());
+        srcObjects.add(src);
+        //System.out.println(enumCode.toString());
+        return srcObjects;
     }
 
-    /** Generate Java SRC for MAV_CMD enum element Object. */
-    public static String generateMAVCMDObjects(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
-    {
+    /** Generate Java SRC for MAV_CMD enum element Object. 
+     * @throws Exception */
+    public static List<MessageCompiler.DynamicSourceCodeObject> generateMAVCMDObjects(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation) throws Exception
+    {	
+    	List<MessageCompiler.DynamicSourceCodeObject> srcObjects = new ArrayList<MessageCompiler.DynamicSourceCodeObject>();
     	StringBuilder output = new StringBuilder();
     	// Note: hasLocation and isDestination are MAV_CMD specific
 
@@ -591,15 +599,19 @@ public class MAVLinkJavaEnumCodeGenerator {
 	        
 	        // end class
 	        enumCode.append("}\n\n");
+	        //System.out.println(enumCode.toString());
 	        // append new MAV_CMD to output
-	        output.append(enumCode.toString());
+	    	MessageCompiler.DynamicSourceCodeObject src = new MessageCompiler.DynamicSourceCodeObject("org.happy.artist.mavlink.messages.mavcmd.".concat(valueNames.get(i)),enumCode.toString());
+	    	srcObjects.add(src);
     	}
-        return output.toString();
+    	return srcObjects;
     }
 
-    /** Generate Java SRC for enum class. Mavlink Message Enum code automated code generation. */
-    public static String generateEnumObject(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
+    /** Generate Java SRC for enum class. Mavlink Message Enum code automated code generation. 
+     * @throws Exception */
+    public static List<MessageCompiler.DynamicSourceCodeObject> generateEnumObject(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation) throws Exception
     {
+    	List<MessageCompiler.DynamicSourceCodeObject> srcObjects = new ArrayList<MessageCompiler.DynamicSourceCodeObject>();
         StringBuilder enumCode = new StringBuilder();
     	// package line
         enumCode.append("package org.happy.artist.mavlink.messages.mavenums;\n\n");        
@@ -811,7 +823,10 @@ public class MAVLinkJavaEnumCodeGenerator {
        
         // end enum
         enumCode.append("}\n");
-
-        return enumCode.toString();
+        // append new MAV_CMD to output
+        //System.out.println(enumCode.toString());
+    	MessageCompiler.DynamicSourceCodeObject src = new MessageCompiler.DynamicSourceCodeObject("org.happy.artist.mavlink.messages.mavcmd.".concat(enumName),enumCode.toString());
+        srcObjects.add(src);
+        return srcObjects;
     }    
 }
