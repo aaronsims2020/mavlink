@@ -16,7 +16,6 @@ public class MAVLinkJavaEnumCodeGenerator {
     private static LocalDate currentDate = LocalDate.now();
     private static String currentMonth = currentDate.getMonth().toString();
     private static String currentYear = String.valueOf(currentDate.getYear());  
-// TODO: Completed in XML Reader - Field/Message, extension elements..., Attributes hasLocation, isDestination, bitmask, and the tag param, include (only top level includes allowed),.
 // TODO: include When building, generator toolchains will merge/append enums in all files, and report duplicate enum entries and messages.
     /** Generate Java SRC for message element Object. Mavlink Message Message element code automated code generation. */
     public static String generateMessageObject(MessageElement message)
@@ -300,7 +299,7 @@ public class MAVLinkJavaEnumCodeGenerator {
     public static String generateMAVCMDObjects(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
     {
     	StringBuilder output = new StringBuilder();
-    	// hasLocation and isDestination are MAV_CMD specific
+    	// Note: hasLocation and isDestination are MAV_CMD specific
 
     	for(int i =0;i<valueNames.size();i++)
     	{
@@ -309,21 +308,119 @@ public class MAVLinkJavaEnumCodeGenerator {
 	        enumCode.append("package net.happyartist.mavlink.messages.mavcmd;\n\n");
 	        // imports
 	        enumCode.append("import net.happyartist.mavlink.messages.generator.ParamElement;\n\n");
-	    	// class javadoc
-	        enumCode.append("/** ");
-	        enumCode.append(descriptions.get(i));
-	        enumCode.append("\n* \n* @author Happy Artist\n* Copyright (C) ");
-	        enumCode.append(currentYear);
-	        enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
-	        enumCode.append("* Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
-	        enumCode.append(currentMonth);
-	        enumCode.append(" ");
-	        enumCode.append(currentYear);
-	        enumCode.append("\n*/\n");
-	        // define class
-	        enumCode.append("public class ");
+        
+	        // class javadoc	        
+	        String mavCMDDeprecated = enumNameNameValueDeprecated.get(i);
+	        String mavCMDDeprecatedSince = enumNameNameValueDeprecatedSince.get(i);
+	        String mavCMDDeprecatedReplacedBy = enumNameNameValueDeprecatedReplacedBy.get(i);	        
+	        String mavCMDWIP = enumNameNameValueWIP.get(i);
+	        String mavCMDDescription = descriptions.get(i);
+	        
+	        if(mavCMDDeprecated==null&&mavCMDWIP==null)
+	        {
+	            if(mavCMDDescription==null||mavCMDDescription.isEmpty())
+	            {
+	                // No description defined.
+	                enumCode.append("/**\n");
+	                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+	                enumCode.append(currentYear);
+	                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+	                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+	                enumCode.append(currentMonth);
+	                enumCode.append(" ");
+	                enumCode.append(currentYear);
+	                enumCode.append("\n*/\n");                  
+	            }
+	            else
+	            {
+	                // description available write Javadocs
+	                enumCode.append("/** ");
+	                enumCode.append(mavCMDDescription);
+	                enumCode.append("*\n");
+	                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+	                enumCode.append(currentYear);
+	                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+	                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+	                enumCode.append(currentMonth);
+	                enumCode.append(" ");
+	                enumCode.append(currentYear);
+	                enumCode.append("\n*/\n");                 
+	            }
+	            enumCode.append("public class ");
+	        }
+	        else if(mavCMDWIP!=null)
+	        {
+	            // MAV_CMD is WIP
+	            if(mavCMDDescription==null||mavCMDDescription.isEmpty())
+	            {
+	                // No description defined.
+	                enumCode.append("/** WIP: This MAV_CMD is work-in-progress and it can therefore change. It should NOT be used in stable production environments. ");
+	                enumCode.append(mavCMDWIP);
+	                enumCode.append("*\n");
+	                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+	                enumCode.append(currentYear);
+	                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+	                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+	                enumCode.append(currentMonth);
+	                enumCode.append(" ");
+	                enumCode.append(currentYear);
+	                enumCode.append("\n*/\n");                  
+	            }
+	            else
+	            {
+	                // description available write Javadocs
+	                enumCode.append("/** WIP: This MAV_CMD is work-in-progress and it can therefore change. It should NOT be used in stable production environments. ");
+	                enumCode.append(mavCMDWIP);
+	                enumCode.append("\n * ");
+	                enumCode.append(mavCMDDescription);
+	                enumCode.append("\n*");
+	                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+	                enumCode.append(currentYear);
+	                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+	                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+	                enumCode.append(currentMonth);
+	                enumCode.append(" ");
+	                enumCode.append(currentYear);
+	                enumCode.append("\n*/\n");                  
+	            }
+	            enumCode.append("public class ");
+	        }
+	        else
+	        {
+	            // MAV_CMD is deprecated
+	            if(mavCMDDeprecatedSince==null)
+	            {
+	            	mavCMDDeprecatedSince="NOT_DEFINED";
+	            }
+	            if(mavCMDDeprecatedReplacedBy==null)
+	            {
+	            	mavCMDDeprecatedReplacedBy="NOT_DEFINED";
+	            }
+	            if(mavCMDDescription==null||mavCMDDescription.isEmpty())
+	            {
+	                // No description defined.
+	                enumCode.append("/** @deprecated  As of ");
+	                enumCode.append(mavCMDDeprecatedSince);
+	                enumCode.append(", replaced by ");
+	                enumCode.append(mavCMDDeprecatedReplacedBy);
+	                enumCode.append(". */\n");
+	            }
+	            else
+	            {
+	                // description available write Javadocs
+	                enumCode.append("/** @deprecated  As of ");
+	                enumCode.append(mavCMDDeprecatedSince);
+	                enumCode.append(", replaced by ");
+	                enumCode.append(mavCMDDeprecatedReplacedBy);
+	                enumCode.append(".\n * ");
+	                enumCode.append(mavCMDDescription);
+	                enumCode.append("\n*/\n");
+	            }
+	            enumCode.append("@Deprecated public class ");
+	        }
 	        enumCode.append(valueNames.get(i));
-	        enumCode.append(" {\n");
+	        enumCode.append("\n{\n");      
+
 	        // define class variables
 	        // MAV_CMD name
 	        enumCode.append("/** The name of the MAV_CMD entry value (mandatory). This is a string of capitalized, underscore-separated words. */\n");
@@ -504,20 +601,38 @@ public class MAVLinkJavaEnumCodeGenerator {
     public static String generateEnumObject(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation)
     {
         StringBuilder enumCode = new StringBuilder();
+    	// package line
+        enumCode.append("package net.happyartist.mavlink.messages.mavenums;\n\n");        
         // enum javadoc
         if(enumDeprecated==null&&enumWIP==null)
         {
             if(enumDescription==null||enumDescription.isEmpty())
             {
                 // No description defined.
-                enumCode.append("/** */\n");
+                enumCode.append("/**\n");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");                  
             }
             else
             {
                 // description available write Javadocs
                 enumCode.append("/** ");
                 enumCode.append(enumDescription);
-                enumCode.append(" */\n");
+                enumCode.append("*\n");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");                 
             }
             enumCode.append("public enum ");
         }
@@ -529,7 +644,15 @@ public class MAVLinkJavaEnumCodeGenerator {
                 // No description defined.
                 enumCode.append("/** WIP: This enum is work-in-progress and it can therefore change. It should NOT be used in stable production environments. ");
                 enumCode.append(enumWIP);
-                enumCode.append(" */\n");
+                enumCode.append("*\n");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");                  
             }
             else
             {
@@ -538,7 +661,15 @@ public class MAVLinkJavaEnumCodeGenerator {
                 enumCode.append(enumWIP);
                 enumCode.append("\n * ");
                 enumCode.append(enumDescription);
-                enumCode.append("\n*/\n");
+                enumCode.append("\n*");
+                enumCode.append("*  @author Happy Artist\n* Copyright (C) ");
+                enumCode.append(currentYear);
+                enumCode.append("  Happy Artist - All Rights Reserved.\n* Unauthorized copying of this file, via any medium is strictly prohibited\n");
+                enumCode.append("*  Proprietary and confidential\n* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, ");
+                enumCode.append(currentMonth);
+                enumCode.append(" ");
+                enumCode.append(currentYear);
+                enumCode.append("\n*/\n");                  
             }
             enumCode.append("public enum ");
         }
