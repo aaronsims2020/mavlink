@@ -43,6 +43,10 @@ public class MAVLinkCommonXMLReader {
             File absolutePath = new File("./bin");
             System.out.println("Classes output directory: ".concat(absolutePath.getCanonicalPath()));
             System.out.println("Success: ".concat(String.valueOf(MessageCompiler.compile(srcObjects, "./bin"))));
+            absolutePath = new File("./docs");
+            System.out.println("Javadocs output directory: ".concat(absolutePath.getCanonicalPath()));
+            System.out.println("Generating Javadocs for Java MAVLink Common Messages classes... If you receive an error here, ensure tools.jar from the JDK is in the classpath.");
+            System.out.println("Javadocs created success: ".concat(String.valueOf(MessageCompiler.generateAPIDocs(srcObjects, "./docs"))));
         }
         catch(URISyntaxException ex)
         {

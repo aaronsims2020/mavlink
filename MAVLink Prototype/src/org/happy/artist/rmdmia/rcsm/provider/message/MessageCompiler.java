@@ -1,5 +1,6 @@
 package org.happy.artist.rmdmia.rcsm.provider.message;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -13,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
+import javax.tools.DocumentationTool;
+import javax.tools.DocumentationTool.DocumentationTask;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -107,9 +110,13 @@ public class MessageCompiler
  
         // for compilation diagnostic message processing on compilation WARNING/ERROR
         MessageDiagnosticListener c = new MessageDiagnosticListener();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(c,
-                                                                              Locale.ENGLISH,
-                                                                              null);
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(c,Locale.ENGLISH,null);
+        // create directories if they do not exist.
+        File outDir = new File(class_output_folder);
+        if(outDir.exists()==false)
+        {
+        	outDir.mkdirs();
+        }
         //specify classes output folder
         Iterable options = Arrays.asList("-d", class_output_folder);
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager,
@@ -214,6 +221,59 @@ public class MessageCompiler
         return task.call();
     }    
  
+    /** generate Java API Documentation. Input parameter elements in dynamic_source_code_object_array. */
+    public static boolean generateAPIDocs(List<MessageCompiler.DynamicSourceCodeObject> dynamic_source_code_object_list, String docs_output_folder) throws Exception
+    {
+        final MessageCompiler.DynamicSourceCodeObject[] dynamic_source_code_object_array=getNonDuplicatedSourceCodeObjectArray(dynamic_source_code_object_list);
+        logger.log(Level.FINEST, "Generating API Documentation List<MessageCompiler.DynamicSourceCodeObject>: ".concat(Arrays.deepToString(dynamic_source_code_object_array)));
+        // If input parameters are null return false.
+        if(dynamic_source_code_object_array==null||docs_output_folder==null)
+        {
+            return false;
+        }
+        
+        Iterable<? extends JavaFileObject> files = Arrays.asList(dynamic_source_code_object_array);
+        //get system documentation tool:
+        //JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        // for compilation diagnostic message processing on compilation WARNING/ERROR
+        MessageDiagnosticListener c = new MessageDiagnosticListener();
+        DocumentationTool tool = ToolProvider.getSystemDocumentationTool();
+        StandardJavaFileManager fm = tool.getStandardFileManager(c,
+                Locale.ENGLISH,
+                null);
+            File outDir = new File(docs_output_folder);
+            if(outDir.exists()==false)
+            {
+            	outDir.mkdirs();
+            }
+            fm.setLocation(DocumentationTool.Location.DOCUMENTATION_OUTPUT, Arrays.asList(outDir));
+            Iterable options = Arrays.asList("-d", docs_output_folder);
+            DocumentationTask task=null;
+            try 
+            {           
+            	task = tool.getTask(null, fm, null, null, null, files);
+		    } 
+            catch (IllegalArgumentException e) 
+            {
+		        System.err.println("exception caught as expected: " + e);
+		    }          
+            return new Boolean(task.call()).booleanValue();      
+            
+    }
+        // for compilation diagnostic message processing on compilation WARNING/ERROR
+/*        MessageDiagnosticListener c = new MessageDiagnosticListener();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(c,
+                                                                              Locale.ENGLISH,
+                                                                              null);
+        //specify classes output folder
+        Iterable options = Arrays.asList("-d", class_output_folder);
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager,
+                                                             c, options, null,
+                                                             files);
+        return task.call();
+        */
+          
+
     public static void main(String[] args) throws Exception
     {
         // Compile Java source code by String.
