@@ -3,10 +3,20 @@ package org.happy.artist.rmdmia.rcsm.provider.message;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,7 +42,7 @@ import org.happy.artist.file.utils.WriteFile;
  *
  * @author Happy Artist
  * 
- * @copyright Copyright Â© 2014-2020 Happy Artist. All rights reserved.
+ * @copyright Copyright © 2014-2020 Happy Artist. All rights reserved.
  */
 public class MessageCompiler
 {
@@ -80,8 +90,7 @@ public class MessageCompiler
         }
     }
 
- // Fastest way to Copy file in Java
- 	@SuppressWarnings("resource")
+    /** Write Java SRC to Files. */
  	public static void writeSRCFiles(List<MessageCompiler.DynamicSourceCodeObject> files, String srcOutputFolder, boolean removeExistingSRCDirIfExists) throws IOException
      {
  		File srcFolder = new File(srcOutputFolder);
@@ -102,7 +111,104 @@ public class MessageCompiler
  		}
      }
 
+ 	/** Generate Java SRC Jar file. 
+ 	 * @throws IOException */
+ 	public static void generateSRCJAR(List<MessageCompiler.DynamicSourceCodeObject> files, String jarsOutputFolder, boolean removeExistingJARFileIfExists, String jarFileName) throws IOException
+ 	{
+        Map<String, String> env = new HashMap<>(); 
+        env.put("create", "true");
+        // locate file system by using the syntax 
+        // defined in java.net.JarURLConnection
+        File jarFolder = new File(jarsOutputFolder);
+        if(jarFolder.exists()==false)
+        {
+        	jarFolder.mkdirs();
+        }
 
+        URI uri = URI.create("jar:".concat(jarFolder.toURI().toString()).concat(jarFileName));
+
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
+        	for(int i =0;i<files.size();i++)
+        	{
+	            Path pathInZipfile = zipfs.getPath(files.get(i).toUri().getPath());
+	    		ByteBuffer byteBuff = StandardCharsets.UTF_8.encode(files.get(i).contents.toString());
+	    		String utf8String = new String(byteBuff.array(), StandardCharsets.UTF_8);
+	            InputStream inputStream = new ByteArrayInputStream(utf8String.getBytes(StandardCharsets.UTF_8));
+	            
+	            // copy a file into the zip file
+	            if(Files.exists(pathInZipfile.getParent(), LinkOption.NOFOLLOW_LINKS)==false)
+	            {
+	            	Files.createDirectories(pathInZipfile.getParent(), null);
+	            }
+	            Files.copy(inputStream, pathInZipfile, StandardCopyOption.REPLACE_EXISTING ); 
+        	}
+        }  			
+ 	}
+
+ 	/** Generate Java classes Jar file. 
+ 	 * @throws IOException */
+ 	public static void generateClassesJAR(List<MessageCompiler.DynamicSourceCodeObject> files, String classesOutputFolder, String jarsOutputFolder, boolean removeExistingJARFileIfExists, String jarFileName) throws IOException
+ 	{
+        Map<String, String> env = new HashMap<>(); 
+        env.put("create", "true");
+        // locate file system by using the syntax 
+        // defined in java.net.JarURLConnection
+        File jarFolder = new File(jarsOutputFolder);
+        if(jarFolder.exists()==false)
+        {
+        	jarFolder.mkdirs();
+        }
+
+        URI uri = URI.create("jar:".concat(jarFolder.toURI().toString()).concat(jarFileName));
+
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
+        	for(int i =0;i<files.size();i++)
+        	{
+        		Path pathExternalDirectory = new File(classesOutputFolder).toPath();
+	            Path pathInZipfile = zipfs.getPath(files.get(i).toUri().getPath());
+	            
+	            // copy a file into the zip file
+	            if(Files.exists(pathInZipfile.getParent(), LinkOption.NOFOLLOW_LINKS)==false)
+	            {
+	            	Files.createDirectories(pathInZipfile.getParent(), null);
+	            }	            
+	            Files.copy(pathExternalDirectory, pathInZipfile, StandardCopyOption.REPLACE_EXISTING ); 
+        	}
+        }  			
+ 	} 	
+ 	
+ 	/** Generate Javadocs Jar file. 
+ 	 * @throws IOException */
+ 	public static void generateDocsJAR(List<MessageCompiler.DynamicSourceCodeObject> files, String docsOutputFolder, String jarsOutputFolder, boolean removeExistingJARFileIfExists, String jarFileName) throws IOException
+ 	{
+        Map<String, String> env = new HashMap<>(); 
+        env.put("create", "true");
+        // locate file system by using the syntax 
+        // defined in java.net.JarURLConnection
+        File jarFolder = new File(jarsOutputFolder);
+        if(jarFolder.exists()==false)
+        {
+        	jarFolder.mkdirs();
+        }
+
+        URI uri = URI.create("jar:".concat(jarFolder.toURI().toString()).concat(jarFileName));
+
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
+        	for(int i =0;i<files.size();i++)
+        	{
+        		Path pathExternalDirectory = new File(docsOutputFolder).toPath();
+	            Path pathInZipfile = zipfs.getPath(files.get(i).toUri().getPath());
+	            
+	            // copy a file into the zip file
+	            if(Files.exists(pathInZipfile.getParent(), LinkOption.NOFOLLOW_LINKS)==false)
+	            {
+	            	Files.createDirectories(pathInZipfile.getParent(), null);
+	            }	            
+	            Files.copy(pathExternalDirectory, pathInZipfile, StandardCopyOption.REPLACE_EXISTING ); 
+        	}
+        }  	 		
+ 	} 	 	
+ 	
     /** Return a DynamicSourceCodeObject array with no duplicates. Duplicates are not allowed by the compiler. */
     private static MessageCompiler.DynamicSourceCodeObject[] getNonDuplicatedSourceCodeObjectArray(List<MessageCompiler.DynamicSourceCodeObject> dynamicSourceCodeObjectList)
     {

@@ -215,6 +215,11 @@ public class MAVLinkMessageToolkit {
 		{
 			docsOutputPath="./docs";
 		}			
+		if(jarsOutputPath==null)
+		{
+			jarsOutputPath="./jars";
+		}		
+		
         try 
         {		
 			// Read MAVLink Message Definitions by URL, and generate and return MessageCompiler.DynamicSourceCodeObject List.
@@ -228,6 +233,8 @@ public class MAVLinkMessageToolkit {
 	            System.out.println("SRC output directory: ".concat(absolutePath.getCanonicalPath()));            
 	            try
 	            {
+	            	MessageCompiler.generateSRCJAR(srcObjects, jarsOutputPath, true, "mavlink_message_definitions-src.jar");
+	            	
 	            	MessageCompiler.writeSRCFiles(srcObjects, srcOutputPath, true);
 	            }
 	            catch(IOException e)
@@ -269,7 +276,22 @@ public class MAVLinkMessageToolkit {
 			// Generate Jars
 			if(generateJars)
 			{
-		        System.out.println("Jar file generation is not implemented.");            							
+    			if(generateSRC)
+    			{
+					System.out.println("Generating the SRC Jar...");
+	            	MessageCompiler.generateSRCJAR(srcObjects, jarsOutputPath, true, "mavlink_message_definitions-src.jar");
+    			}
+    			if(generateClasses)
+    			{
+    				System.out.println("Generating the Classes Jar...");
+    				MessageCompiler.generateClassesJAR(srcObjects, classesOutputPath, jarsOutputPath, true, "mavlink_message_definitions.jar");
+    			}
+            	if(generateAPIDocs)
+    			{
+	            	System.out.println("Generating the Javadocs Jar...");
+	            	MessageCompiler.generateDocsJAR(srcObjects, docsOutputPath, jarsOutputPath, true, "mavlink_message_definition-javadocs.jar");
+    			}
+    			System.out.println("Jar Generation Completed.");
 			}
         }
         catch(URISyntaxException ex)
