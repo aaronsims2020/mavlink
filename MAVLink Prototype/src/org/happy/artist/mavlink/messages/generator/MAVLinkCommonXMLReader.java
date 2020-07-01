@@ -121,7 +121,6 @@ public class MAVLinkCommonXMLReader {
             XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(url.openStream());
             while(xmlEventReader.hasNext()){
                 XMLEvent xmlEvent = xmlEventReader.nextEvent();
-// TODO: Add MAV_CMD Support
                if (xmlEvent.isStartElement()){
                    StartElement startElement = xmlEvent.asStartElement();
                     if(startElement.getName().getLocalPart().equals("include")&&isInclude==false){

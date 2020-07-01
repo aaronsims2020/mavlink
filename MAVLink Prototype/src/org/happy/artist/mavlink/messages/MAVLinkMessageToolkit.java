@@ -1,6 +1,7 @@
 package org.happy.artist.mavlink.messages;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -21,7 +22,7 @@ import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 *		<li>     -docs "<output path>" (This enables API documentation file generation)
 *		<li>     -jars "<output path>" (This enables Jar file generation)
 *		</ol><br>
-*		<br> Note: including options without output paths will set default output paths of (./src,./bin,./docs,./jars)\n");
+*		<br> Note: including options without output paths will set default output paths of (./src_mavlink-message-definitions,./bin,./docs,./jars)\n");
 *		<br>Example (fill in your classpath information): java org.happy.artist.mavlink.messages.MAVLinkMessageToolkit -classes \"./bin\" -docs \"./docs\"");	
 *
 * @author Happy Artist
@@ -37,7 +38,7 @@ public class MAVLinkMessageToolkit {
 		StringBuilder commandParamsMessage = new StringBuilder();
 		String urlMAVLinkMessageDefinitionsXML="https://raw.githubusercontent.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
 		boolean generateSRC=false;
-		String srcOutputPath="./src";
+		String srcOutputPath="./src_mavlink-message-definitions";
 		boolean generateClasses=false;
 		String classesOutputPath="./bin";
 		boolean generateAPIDocs=false;
@@ -54,7 +55,7 @@ public class MAVLinkMessageToolkit {
 			commandParamsMessage.append("\n     -classes <output path> ");
 			commandParamsMessage.append("\n     -docs <output path> ");
 			commandParamsMessage.append("\n     -jars <output path>");
-			commandParamsMessage.append("\n Note: including options without output paths will set default output paths of (./src,./bin,./docs,./jars)\n");
+			commandParamsMessage.append("\n Note: including options without output paths will set default output paths of (./src_mavlink-message-definitions,./bin,./docs,./jars)\n");
 			commandParamsMessage.append("\nExample (fill in your classpath information): java org.happy.artist.mavlink.messages.MAVLinkMessageToolkit -classes \"./bin\" -docs \"./docs\"");		
 			// Validate the URL
 			URL url;
@@ -168,7 +169,6 @@ public class MAVLinkMessageToolkit {
 		}
 	}
 
-	// TODO: Implement SRC functionality
 	// TODO: Implement Jar functionality
 	// TODO: Implement Generated Base Class with MAVLink Version, and Dialect
 	// TODO: Implement a base class with pointers to all Message Definition Sub classes. Primarily for ease of development, or a template of all current values for GUI Ground Station implementations. 
@@ -178,7 +178,7 @@ public class MAVLinkMessageToolkit {
 	 *
 	 * @param urlMAVLinkMessageDefinitionsXML The MAVLink message definitions XML URL. On null defaults to: "https://raw.githubusercontent.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml
 	 * @param generateSRC The boolean option to generate source code
-	 * @param srcOutputPath The source code output path. If null defaults to "./src"
+	 * @param srcOutputPath The source code output path. If null defaults to "./src_mavlink-message-definitions"
 	 * @param generateClasses The boolean option to generate classes
 	 * @param classesOutputPath The classes output path. If null defaults to "./bin"
 	 * @param generateAPIDocs The boolean option to generate API docs
@@ -205,7 +205,7 @@ public class MAVLinkMessageToolkit {
 		}
 		if(srcOutputPath==null)
 		{
-			srcOutputPath="./src";
+			srcOutputPath="./src_mavlink-message-definitions";
 		}
 		if(classesOutputPath==null)
 		{
@@ -224,7 +224,19 @@ public class MAVLinkMessageToolkit {
 			// Generate source code if generateSRC is true. The source code (src) is already created, but must be written to files for this to make sense to API user.
 			if(generateSRC)
 			{
-		        System.out.println("Source code output to files is not implemented.");            			
+	            absolutePath = new File(srcOutputPath);
+	            System.out.println("SRC output directory: ".concat(absolutePath.getCanonicalPath()));            
+	            try
+	            {
+	            	MessageCompiler.writeSRCFiles(srcObjects, srcOutputPath, true);
+	            }
+	            catch(IOException e)
+	            {
+	            	srcSuccess=false;
+	            	success=false;
+	                logger.log(Level.SEVERE, "Failed to write all Java files.", e);
+	            }
+	            System.out.println("Success: ".concat(String.valueOf(srcSuccess))); 	            
 			}
 			
 			// Generate Classes if generateSRC is true.		

@@ -1,8 +1,10 @@
 package org.happy.artist.rmdmia.rcsm.provider.message;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,6 +23,9 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+
+import org.happy.artist.file.utils.DeleteDirectory;
+import org.happy.artist.file.utils.WriteFile;
 
 /**
  * MessageCompiler - Compiler for dynamically generated Java source code. 
@@ -74,6 +79,28 @@ public class MessageCompiler
             return contents;
         }
     }
+
+ // Fastest way to Copy file in Java
+ 	@SuppressWarnings("resource")
+ 	public static void writeSRCFiles(List<MessageCompiler.DynamicSourceCodeObject> files, String srcOutputFolder, boolean removeExistingSRCDirIfExists) throws IOException
+     {
+ 		File srcFolder = new File(srcOutputFolder);
+ 		if(srcOutputFolder.isEmpty())
+ 		{
+ 			return;
+ 		}
+ 		
+ 		if(removeExistingSRCDirIfExists)
+ 		{
+ 			// Remove source directory if exists
+ 			DeleteDirectory.deleteDirectory(srcFolder.toPath());
+ 		}
+ 		// Write source code files, could probably be more efficient if writing multiple files at same time.
+ 		for(int i=0;i<files.size();i++)
+ 		{
+ 			WriteFile.writeCharSequenceToUTF8File(files.get(i).contents, srcFolder.getCanonicalPath().concat("/").concat(files.get(i).toUri().getPath()));
+ 		}
+     }
 
 
     /** Return a DynamicSourceCodeObject array with no duplicates. Duplicates are not allowed by the compiler. */
@@ -259,20 +286,7 @@ public class MessageCompiler
 		    }          
             return new Boolean(task.call()).booleanValue();      
             
-    }
-        // for compilation diagnostic message processing on compilation WARNING/ERROR
-/*        MessageDiagnosticListener c = new MessageDiagnosticListener();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(c,
-                                                                              Locale.ENGLISH,
-                                                                              null);
-        //specify classes output folder
-        Iterable options = Arrays.asList("-d", class_output_folder);
-        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager,
-                                                             c, options, null,
-                                                             files);
-        return task.call();
-        */
-          
+    } 
 
     public static void main(String[] args) throws Exception
     {

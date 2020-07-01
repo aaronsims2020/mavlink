@@ -825,7 +825,7 @@ public class MAVLinkJavaEnumCodeGenerator {
         enumCode.append("}\n");
         // append new MAV_CMD to output
         //System.out.println(enumCode.toString());
-    	MessageCompiler.DynamicSourceCodeObject src = new MessageCompiler.DynamicSourceCodeObject("org.happy.artist.mavlink.messages.mavcmd.".concat(enumName),enumCode.toString());
+    	MessageCompiler.DynamicSourceCodeObject src = new MessageCompiler.DynamicSourceCodeObject("org.happy.artist.mavlink.messages.mavenums.".concat(enumName),enumCode.toString());
         srcObjects.add(src);
         return srcObjects;
     }    
