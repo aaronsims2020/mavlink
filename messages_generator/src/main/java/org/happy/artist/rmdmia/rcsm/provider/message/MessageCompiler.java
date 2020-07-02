@@ -42,7 +42,7 @@ import org.happy.artist.file.utils.WriteFile;
  *
  * @author Happy Artist
  * 
- * @copyright Copyright © 2014-2020 Happy Artist. All rights reserved.
+ * @copyright Copyright 2014-2020 Happy Artist. All rights reserved.
  */
 public class MessageCompiler
 {

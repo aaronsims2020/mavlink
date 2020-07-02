@@ -15,12 +15,12 @@ import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 /** Read and process MAVLink Message Definitions from XML to Java SRC code, Classes, and Documentation. If only the URL is written all options will be defaulted enabled src, classes, docs, and jars.
 *<br>
 * 		<br>Application syntax (enclose output paths in double quotes ""): 
-*       <br>MAVLinkMessageToolkit <message definition xml URL> -<options>
-*		<br><ol> Options: 
-*		<li>     -src "<output path>" (This enables source code file generation)
-*		<li>     -classes "<output path>" (This enables class file generation)
-*		<li>     -docs "<output path>" (This enables API documentation file generation)
-*		<li>     -jars "<output path>" (This enables Jar file generation)
+*       <br>MAVLinkMessageToolkit [message definition xml URL] -[options]
+*		<br> Options:<ol> 
+*		<li>     -src "[output path]" (This enables source code file generation)
+*		<li>     -classes "[output path]" (This enables class file generation)
+*		<li>     -docs "[output path]" (This enables API documentation file generation)
+*		<li>     -jars "[output path]" (This enables Jar file generation)
 *		</ol><br>
 *		<br> Note: including options without output paths will set default output paths of (./src_mavlink-message-definitions,./bin,./docs,./jars)\n");
 *		<br>Example (fill in your classpath information): java org.happy.artist.mavlink.messages.MAVLinkMessageToolkit -classes \"./bin\" -docs \"./docs\"");	
@@ -51,10 +51,10 @@ public class MAVLinkMessageToolkit {
 			// Define the command params message
 			commandParamsMessage.append("\nIncorrect syntax:\nMAVLinkMessageToolkit <message definition xml URL> -<options>");
 			commandParamsMessage.append("\n Options: ");
-			commandParamsMessage.append("\n     -src <output path> ");
-			commandParamsMessage.append("\n     -classes <output path> ");
-			commandParamsMessage.append("\n     -docs <output path> ");
-			commandParamsMessage.append("\n     -jars <output path>");
+			commandParamsMessage.append("\n     -src [output path] ");
+			commandParamsMessage.append("\n     -classes [output path] ");
+			commandParamsMessage.append("\n     -docs [output path] ");
+			commandParamsMessage.append("\n     -jars [output path]");
 			commandParamsMessage.append("\n Note: including options without output paths will set default output paths of (./src_mavlink-message-definitions,./bin,./docs,./jars)\n");
 			commandParamsMessage.append("\nExample (fill in your classpath information): java org.happy.artist.mavlink.messages.MAVLinkMessageToolkit -classes \"./bin\" -docs \"./docs\"");		
 			// Validate the URL
