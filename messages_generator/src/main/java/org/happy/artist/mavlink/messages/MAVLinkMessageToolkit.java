@@ -29,7 +29,7 @@ import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 * Copyright (C) 2020 Happy Artist - All Rights Reserved
 * Unauthorized copying of this file, via any medium is strictly prohibited
 * Proprietary and confidential
-* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, June 2020
+* Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, July 2020
 */
 public class MAVLinkMessageToolkit {
 	
