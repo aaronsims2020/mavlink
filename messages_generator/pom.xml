@@ -86,7 +86,7 @@
                     <configuration>
                     <excludePackageNames>org.happy.artist.file.utils:org.happy.artist.mavlink.messages.generator:org.happy.artist.rmdmia.rcsm.provider.message</excludePackageNames>			
                     </configuration>
-            </plugin>
+            </plugin>          
 	</plugins>
 	</build>
 </project>
