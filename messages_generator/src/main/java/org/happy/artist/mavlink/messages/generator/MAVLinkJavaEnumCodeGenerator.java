@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.happy.artist.mavlink.messages.generator.MessageElement;
 import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 
 /**
@@ -15,11 +16,22 @@ import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
  * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, May-June 2020
  */
 public class MAVLinkJavaEnumCodeGenerator {
+    
+    /** The current date. */
     private static LocalDate currentDate = LocalDate.now();
+    
+    /** The current month. */
     private static String currentMonth = currentDate.getMonth().toString();
+    
+    /** The current year. */
     private static String currentYear = String.valueOf(currentDate.getYear());  
-    /** Generate Java SRC for message element Object. Mavlink Message Message element code automated code generation. 
-     * @throws Exception 
+    
+    /**
+     *  Generate Java SRC for message element Object. Mavlink Message Message element code automated code generation. 
+     *
+     * @param message the message
+     * @return the list
+     * @throws Exception the exception
      */
     public static List<MessageCompiler.DynamicSourceCodeObject> generateMessageObject(MessageElement message) throws Exception
     {
@@ -301,8 +313,29 @@ public class MAVLinkJavaEnumCodeGenerator {
         return srcObjects;
     }
 
-    /** Generate Java SRC for MAV_CMD enum element Object. 
-     * @throws Exception */
+    /**
+     *  Generate Java SRC for MAV_CMD enum element Object. 
+     *
+     * @param enumName the enum name
+     * @param enumBitmask the enum bitmask
+     * @param enumDescription the enum description
+     * @param enumDeprecated the enum deprecated
+     * @param enumDeprecatedSince the enum deprecated since
+     * @param enumDeprecatedReplacedBy the enum deprecated replaced by
+     * @param enumWIP the enum WIP
+     * @param values the values
+     * @param valueNames the value names
+     * @param descriptions the descriptions
+     * @param enumNameNameValueDeprecated the enum name name value deprecated
+     * @param enumNameNameValueDeprecatedSince the enum name name value deprecated since
+     * @param enumNameNameValueDeprecatedReplacedBy the enum name name value deprecated replaced by
+     * @param enumNameNameValueWIP the enum name name value WIP
+     * @param enumParamElements the enum param elements
+     * @param enumEntryIsDestination the enum entry is destination
+     * @param enumEntryHasLocation the enum entry has location
+     * @return the list
+     * @throws Exception the exception
+     */
     public static List<MessageCompiler.DynamicSourceCodeObject> generateMAVCMDObjects(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation) throws Exception
     {	
     	List<MessageCompiler.DynamicSourceCodeObject> srcObjects = new ArrayList<MessageCompiler.DynamicSourceCodeObject>();
@@ -607,8 +640,29 @@ public class MAVLinkJavaEnumCodeGenerator {
     	return srcObjects;
     }
 
-    /** Generate Java SRC for enum class. Mavlink Message Enum code automated code generation. 
-     * @throws Exception */
+    /**
+     *  Generate Java SRC for enum class. Mavlink Message Enum code automated code generation. 
+     *
+     * @param enumName the enum name
+     * @param enumBitmask the enum bitmask
+     * @param enumDescription the enum description
+     * @param enumDeprecated the enum deprecated
+     * @param enumDeprecatedSince the enum deprecated since
+     * @param enumDeprecatedReplacedBy the enum deprecated replaced by
+     * @param enumWIP the enum WIP
+     * @param values the values
+     * @param valueNames the value names
+     * @param descriptions the descriptions
+     * @param enumNameNameValueDeprecated the enum name name value deprecated
+     * @param enumNameNameValueDeprecatedSince the enum name name value deprecated since
+     * @param enumNameNameValueDeprecatedReplacedBy the enum name name value deprecated replaced by
+     * @param enumNameNameValueWIP the enum name name value WIP
+     * @param enumParamElements the enum param elements
+     * @param enumEntryIsDestination the enum entry is destination
+     * @param enumEntryHasLocation the enum entry has location
+     * @return the list
+     * @throws Exception the exception
+     */
     public static List<MessageCompiler.DynamicSourceCodeObject> generateEnumObject(String enumName, String enumBitmask, String enumDescription, String enumDeprecated, String enumDeprecatedSince, String enumDeprecatedReplacedBy, String enumWIP, List<String> values, List<String> valueNames, List<String> descriptions, List<String> enumNameNameValueDeprecated, List<String> enumNameNameValueDeprecatedSince, List<String> enumNameNameValueDeprecatedReplacedBy, List<String> enumNameNameValueWIP, List<ArrayList<ParamElement>> enumParamElements, List<String> enumEntryIsDestination, List<String> enumEntryHasLocation) throws Exception
     {
     	List<MessageCompiler.DynamicSourceCodeObject> srcObjects = new ArrayList<MessageCompiler.DynamicSourceCodeObject>();

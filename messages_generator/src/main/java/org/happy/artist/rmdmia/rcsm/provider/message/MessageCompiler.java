@@ -12,7 +12,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,11 +45,30 @@ import org.happy.artist.file.utils.WriteFile;
  */
 public class MessageCompiler
 {
+    
+    /** The Constant logger. */
     // Class Logger define & instantiation
     private final static Logger logger = Logger.getLogger(MessageCompiler.class.getName()); 
     
+    /**
+     * The listener interface for receiving messageDiagnostic events.
+     * The class that is interested in processing a messageDiagnostic
+     * event implements this interface, and the object created
+     * with that class is registered with a component using the
+     * component's <code>addMessageDiagnosticListener<code> method. When
+     * the messageDiagnostic event occurs, that object's appropriate
+     * method is invoked.
+     *
+     * @see MessageDiagnosticEvent
+     */
     private static class MessageDiagnosticListener implements DiagnosticListener<JavaFileObject>
     {
+        
+        /**
+         * Report.
+         *
+         * @param diagnostic the diagnostic
+         */
         @Override
         public void report(Diagnostic<? extends JavaFileObject> diagnostic)
         {
@@ -73,8 +91,17 @@ public class MessageCompiler
     /** Java source file is in memory to avoid putting source file on hard disk. */
     public static class DynamicSourceCodeObject extends SimpleJavaFileObject
     {
+        
+        /** The contents. */
         public String contents = null;
  
+        /**
+         * Instantiates a new dynamic source code object.
+         *
+         * @param class_name the class name
+         * @param contents the contents
+         * @throws Exception the exception
+         */
         public DynamicSourceCodeObject(String class_name, String contents) throws Exception
         {
             super(URI.create("string:///" + class_name.replace('.', '/')
@@ -82,6 +109,13 @@ public class MessageCompiler
             this.contents = contents;
         }
  
+        /**
+         * Gets the char content.
+         *
+         * @param ignoreEncodingErrors the ignore encoding errors
+         * @return the char content
+         * @throws IOException Signals that an I/O exception has occurred.
+         */
         @Override
         public CharSequence getCharContent(boolean ignoreEncodingErrors)
                 throws IOException
@@ -90,7 +124,14 @@ public class MessageCompiler
         }
     }
 
-    /** Write Java SRC to Files. */
+    /**
+     *  Write Java SRC to Files.
+     *
+     * @param files the files
+     * @param srcOutputFolder the src output folder
+     * @param removeExistingSRCDirIfExists the remove existing SRC dir if exists
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
  	public static void writeSRCFiles(List<MessageCompiler.DynamicSourceCodeObject> files, String srcOutputFolder, boolean removeExistingSRCDirIfExists) throws IOException
      {
  		File srcFolder = new File(srcOutputFolder);
@@ -111,8 +152,15 @@ public class MessageCompiler
  		}
      }
 
- 	/** Generate Java SRC Jar file. 
- 	 * @throws IOException */
+ 	/**
+	  *  Generate Java SRC Jar file. 
+	  *
+	  * @param files the files
+	  * @param jarsOutputFolder the jars output folder
+	  * @param removeExistingJARFileIfExists the remove existing JAR file if exists
+	  * @param jarFileName the jar file name
+	  * @throws IOException Signals that an I/O exception has occurred.
+	  */
  	public static void generateSRCJAR(List<MessageCompiler.DynamicSourceCodeObject> files, String jarsOutputFolder, boolean removeExistingJARFileIfExists, String jarFileName) throws IOException
  	{
         Map<String, String> env = new HashMap<>(); 
@@ -145,8 +193,16 @@ public class MessageCompiler
         }  			
  	}
 
- 	/** Generate Java classes Jar file. 
- 	 * @throws IOException */
+ 	/**
+	  *  Generate Java classes Jar file. 
+	  *
+	  * @param files the files
+	  * @param classesOutputFolder the classes output folder
+	  * @param jarsOutputFolder the jars output folder
+	  * @param removeExistingJARFileIfExists the remove existing JAR file if exists
+	  * @param jarFileName the jar file name
+	  * @throws IOException Signals that an I/O exception has occurred.
+	  */
  	public static void generateClassesJAR(List<MessageCompiler.DynamicSourceCodeObject> files, String classesOutputFolder, String jarsOutputFolder, boolean removeExistingJARFileIfExists, String jarFileName) throws IOException
  	{
         Map<String, String> env = new HashMap<>(); 
@@ -177,8 +233,16 @@ public class MessageCompiler
         }  			
  	} 	
  	
- 	/** Generate Javadocs Jar file. 
- 	 * @throws IOException */
+ 	/**
+	  *  Generate Javadocs Jar file. 
+	  *
+	  * @param files the files
+	  * @param docsOutputFolder the docs output folder
+	  * @param jarsOutputFolder the jars output folder
+	  * @param removeExistingJARFileIfExists the remove existing JAR file if exists
+	  * @param jarFileName the jar file name
+	  * @throws IOException Signals that an I/O exception has occurred.
+	  */
  	public static void generateDocsJAR(List<MessageCompiler.DynamicSourceCodeObject> files, String docsOutputFolder, String jarsOutputFolder, boolean removeExistingJARFileIfExists, String jarFileName) throws IOException
  	{
         Map<String, String> env = new HashMap<>(); 
@@ -209,7 +273,12 @@ public class MessageCompiler
         }  	 		
  	} 	 	
  	
-    /** Return a DynamicSourceCodeObject array with no duplicates. Duplicates are not allowed by the compiler. */
+    /**
+     *  Return a DynamicSourceCodeObject array with no duplicates. Duplicates are not allowed by the compiler.
+     *
+     * @param dynamicSourceCodeObjectList the dynamic source code object list
+     * @return the non duplicated source code object array
+     */
     private static MessageCompiler.DynamicSourceCodeObject[] getNonDuplicatedSourceCodeObjectArray(List<MessageCompiler.DynamicSourceCodeObject> dynamicSourceCodeObjectList)
     {
         final Map<String, MessageCompiler.DynamicSourceCodeObject> linkedHashMap = new LinkedHashMap<String, MessageCompiler.DynamicSourceCodeObject>();
@@ -226,7 +295,14 @@ public class MessageCompiler
     
     
     
-    /** Compile Java Source. Input parameter elements in dynamic_source_code_object_array. */
+    /**
+     *  Compile Java Source. Input parameter elements in dynamic_source_code_object_array.
+     *
+     * @param dynamic_source_code_object_list the dynamic source code object list
+     * @param class_output_folder the class output folder
+     * @return true, if successful
+     * @throws Exception the exception
+     */
     public static boolean compile(List<MessageCompiler.DynamicSourceCodeObject> dynamic_source_code_object_list, String class_output_folder) throws Exception
     {
         final MessageCompiler.DynamicSourceCodeObject[] dynamic_source_code_object_array=getNonDuplicatedSourceCodeObjectArray(dynamic_source_code_object_list);
@@ -258,7 +334,14 @@ public class MessageCompiler
         return task.call();
     }      
     
-    /** Compile Java Source. Input parameter elements in dynamic_source_code_object_array. */
+    /**
+     *  Compile Java Source. Input parameter elements in dynamic_source_code_object_array.
+     *
+     * @param dynamic_source_code_object_array the dynamic source code object array
+     * @param class_output_folder the class output folder
+     * @return true, if successful
+     * @throws Exception the exception
+     */
     public static boolean compile(JavaFileObject[] dynamic_source_code_object_array, String class_output_folder) throws Exception
     {
         // If input parameters are null return false.
@@ -284,7 +367,15 @@ public class MessageCompiler
         return task.call();
     }    
     
-    /** Compile Java Source. Input parameter elements in source_code_object_array, and class_names must match up. */
+    /**
+     *  Compile Java Source. Input parameter elements in source_code_object_array, and class_names must match up.
+     *
+     * @param source_code_object_array the source code object array
+     * @param class_names the class names
+     * @param class_output_folder the class output folder
+     * @return true, if successful
+     * @throws Exception the exception
+     */
     public static boolean compile(String[] source_code_object_array, String[] class_names, String class_output_folder) throws Exception
     {
         // If input parameters are null return false.
@@ -316,7 +407,15 @@ public class MessageCompiler
         return task.call();
     }
     
-    /** Compile Java Source. Input parameter elements in source_code_object_array, and class_names must match up. */
+    /**
+     *  Compile Java Source. Input parameter elements in source_code_object_array, and class_names must match up.
+     *
+     * @param source_code the source code
+     * @param class_name the class name
+     * @param class_output_folder the class output folder
+     * @return true, if successful
+     * @throws Exception the exception
+     */
     public static boolean compile(String source_code, String class_name, String class_output_folder) throws Exception
     {
         // If input parameters are null return false.
@@ -354,7 +453,14 @@ public class MessageCompiler
         return task.call();
     }    
  
-    /** generate Java API Documentation. Input parameter elements in dynamic_source_code_object_array. */
+    /**
+     *  generate Java API Documentation. Input parameter elements in dynamic_source_code_object_array.
+     *
+     * @param dynamic_source_code_object_list the dynamic source code object list
+     * @param docs_output_folder the docs output folder
+     * @return true, if successful
+     * @throws Exception the exception
+     */
     public static boolean generateAPIDocs(List<MessageCompiler.DynamicSourceCodeObject> dynamic_source_code_object_list, String docs_output_folder) throws Exception
     {
         final MessageCompiler.DynamicSourceCodeObject[] dynamic_source_code_object_array=getNonDuplicatedSourceCodeObjectArray(dynamic_source_code_object_list);
@@ -394,6 +500,12 @@ public class MessageCompiler
             
     } 
 
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     * @throws Exception the exception
+     */
     public static void main(String[] args) throws Exception
     {
         // Compile Java source code by String.

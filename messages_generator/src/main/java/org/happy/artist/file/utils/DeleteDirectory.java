@@ -12,6 +12,7 @@ public class DeleteDirectory {
 	/** Delete the directory and its contents if it exists
 	 * 
 	 * @param folder NIO Path of folder to delete.
+	 * @throws IOException throw when Files or Directory cannot be deleted.
 	 */
 	public static void deleteDirectory(final Path folder) throws IOException 
 	{

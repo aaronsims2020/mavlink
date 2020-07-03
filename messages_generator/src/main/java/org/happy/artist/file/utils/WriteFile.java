@@ -9,9 +9,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The Class WriteFile.
+ */
 public class WriteFile {
-	/** Write UTF-16 Java String as UTF-8 file. 
-	 * @throws IOException */
+	
+	/**
+	 *  Write UTF-16 Java String as UTF-8 file. 
+	 *
+	 * @param chars CharSequence from the MessageCompiler.DynamicSourceCodeObject
+	 * @param outputLocation of file to write.
+	 * @throws IOException throw when Files or Directory cannot be written.
+	 */
 	public static void writeCharSequenceToUTF8File(CharSequence chars, String outputLocation) throws IOException
 	{
 		// convert CharSequence to UTF-8

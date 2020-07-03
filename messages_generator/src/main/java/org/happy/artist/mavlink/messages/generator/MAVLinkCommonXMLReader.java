@@ -23,7 +23,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 import javax.xml.stream.events.Characters;
 
-/** Read and process the MAVLink common.xml into Java SRC code.
+/** Read and process the MAVLink Message Definition XML files i.e. (common.xml) into Java SRC code.
  *
  * @author Happy Artist
  * Copyright (C) 2020 Happy Artist - All Rights Reserved
@@ -32,6 +32,12 @@ import javax.xml.stream.events.Characters;
  * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, May 2020
  */
 public class MAVLinkCommonXMLReader {
+    
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
     public static void main(String[] args) {
         String url = "https://raw.githubusercontent.com/mavlink/mavlink/master/message_definitions/v1.0/common.xml";
         //String url = "file:/C:/downloads/test.xml";
@@ -61,13 +67,26 @@ public class MAVLinkCommonXMLReader {
         // System.out.println(srcObjects);
     }
 
-    /** Return Java SRC from MAVLink xml. 
-     * @throws Exception */
+    /**
+     *  Return Java SRC from MAVLink xml. 
+     *
+     * @param commonXMLURL the common XMLURL
+     * @return the list
+     * @throws Exception the exception
+     */
     public static List<MessageCompiler.DynamicSourceCodeObject> parseXML(String commonXMLURL) throws Exception {
         return parseXML(commonXMLURL, null, false);
     }
-    /** Return Java SRC from MAVLink xml. If is root document set boolean isInclude to false. 
-     * @throws Exception */
+    
+    /**
+     *  Return Java SRC from MAVLink xml. If is root document set boolean isInclude to false. 
+     *
+     * @param commonXMLURL the MAVLink Message Definiton XML URL.
+     * @param relativeURI the relative URI
+     * @param isInclude the is include
+     * @return the list
+     * @throws Exception the exception
+     */
     private static List<MessageCompiler.DynamicSourceCodeObject> parseXML(String commonXMLURL, String relativeURI, boolean isInclude) throws Exception {
         URL url = new URL(commonXMLURL);
         if(isInclude==true&&relativeURI!=null)
@@ -636,6 +655,15 @@ public class MAVLinkCommonXMLReader {
         }
         return srcObjects;
     }
+    
+    /**
+     * Gets the character data.
+     *
+     * @param event the event
+     * @param eventReader the event reader
+     * @return the character data
+     * @throws XMLStreamException the XML stream exception
+     */
     private static String getCharacterData(XMLEvent event, XMLEventReader eventReader) throws XMLStreamException {
         String result = "";
         event = eventReader.nextEvent();

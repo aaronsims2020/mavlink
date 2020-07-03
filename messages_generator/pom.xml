@@ -5,10 +5,26 @@
     <artifactId>messages_generator</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <description>Java MAVLink Common Messages src code, byte code, and javadoc generator</description>
+    <description>MAVLink Message Definition Generator XML to Java. Supports MAVLink 1, 2, and the latest v3.0 common definitions files. Use to generate MAVLink Common Messages, and custom dialects  includes Common Messages. Optionally generate source code, java classes, javadoc Message Definition API documentation, and/or package in Jars.</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+   	<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>attach-javadocs</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+	</build>
 </project>
