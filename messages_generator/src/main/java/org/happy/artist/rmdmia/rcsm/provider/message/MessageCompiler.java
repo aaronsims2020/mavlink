@@ -40,8 +40,10 @@ import org.happy.artist.file.utils.WriteFile;
  * MessageCompiler - Compiler for dynamically generated Java source code. 
  *
  * @author Happy Artist
- * 
- * @copyright Copyright 2014-2020 Happy Artist. All rights reserved.
+ * Copyright 2014-2020 Happy Artist. All rights reserved.
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Happy Artist &lt;aaronsims2020@gmail.com&gt;, 2014-2020 July
  */
 public class MessageCompiler
 {

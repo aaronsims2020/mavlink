@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.happy.artist.mavlink.messages.generator.MessageElement;
+import org.happy.artist.mavlink.messages.elements.FieldElement;
+import org.happy.artist.mavlink.messages.elements.MessageElement;
+import org.happy.artist.mavlink.messages.elements.ParamElement;
 import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 
 /**
@@ -42,7 +44,7 @@ public class MAVLinkJavaEnumCodeGenerator {
         // imports
         enumCode.append("import java.util.List;\n");
         enumCode.append("import java.util.ArrayList;\n");
-        enumCode.append("import org.happy.artist.mavlink.messages.generator.FieldElement;\n\n");        
+        enumCode.append("import org.happy.artist.mavlink.messages.elements.FieldElement;\n\n");        
 
         // message javadoc
         if(message.DEPRECATED_ELEM==null&&message.WIP_ELEM==null)
@@ -348,7 +350,7 @@ public class MAVLinkJavaEnumCodeGenerator {
 	    	// package line
 	        enumCode.append("package org.happy.artist.mavlink.messages.mavcmd;\n\n");
 	        // imports
-	        enumCode.append("import org.happy.artist.mavlink.messages.generator.ParamElement;\n\n");
+	        enumCode.append("import org.happy.artist.mavlink.messages.elements.ParamElement;\n\n");
         
 	        // class javadoc	        
 	        String mavCMDDeprecated = enumNameNameValueDeprecated.get(i);

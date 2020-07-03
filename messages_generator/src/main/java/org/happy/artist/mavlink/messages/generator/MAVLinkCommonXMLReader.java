@@ -20,6 +20,9 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.happy.artist.mavlink.messages.elements.FieldElement;
+import org.happy.artist.mavlink.messages.elements.MessageElement;
+import org.happy.artist.mavlink.messages.elements.ParamElement;
 import org.happy.artist.rmdmia.rcsm.provider.message.MessageCompiler;
 import javax.xml.stream.events.Characters;
 

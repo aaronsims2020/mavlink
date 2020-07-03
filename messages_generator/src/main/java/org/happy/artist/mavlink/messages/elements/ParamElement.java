@@ -1,4 +1,4 @@
-package org.happy.artist.mavlink.messages.generator;
+package org.happy.artist.mavlink.messages.elements;
 
 /** Stores param element values for the code generator class. Param element are specific to MAV_CMD Element.
  *  boolean variable names ending _ISSET define true if the param attribute value was set in the xml definition. skip if set to false during code generation.

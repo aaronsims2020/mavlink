@@ -16,6 +16,7 @@
 		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>3.2.0</version>
 			<executions>
 				<execution>
 					<id>attach-javadocs</id>
@@ -24,6 +25,9 @@
 					</goals>
 				</execution>
 			</executions>
+			<configuration>
+          		<excludePackageNames>org.happy.artist.file.utils.*:org.happy.artist.mavlink.messages.generator.*:org.happy.artist.rmdmia.rcsm.provider.message.*</excludePackageNames>			
+			</configuration>
 		</plugin>
 	</plugins>
 	</build>
