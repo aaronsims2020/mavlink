@@ -10,8 +10,8 @@
 
     <licenses>
       <license>
-        <name>The Apache Software License, Version 2.0</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        <name>The Happy Artist Technology Preview Release 1.0 License Agreement July, 2020</name>
+        <url>https://github.com/aaronsims2020/mavlink/blob/master/LICENSE</url>
       </license>
     </licenses>
 
@@ -24,9 +24,9 @@
     </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/simpligility/ossrh-demo.git</connection>
-    <developerConnection>scm:git:ssh://github.com:simpligility/ossrh-demo.git</developerConnection>
-    <url>http://github.com/simpligility/ossrh-demo/tree/master</url>
+    <connection>scm:git:git://github.com/aaronsims2020/mavlink.git</connection>
+    <developerConnection>scm:git:ssh://github.com:aaronsims2020/mavlink.git</developerConnection>
+    <url>https://github.com/aaronsims2020/mavlink/tree/master/messages_generator</url>
    </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
